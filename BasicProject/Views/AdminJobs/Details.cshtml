@@ -1,0 +1,218 @@
+﻿@model BasicProject.Models.Job
+
+@{
+    ViewBag.Title = "Job Post Details";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    bool jobIsExpired = Model.Deadline.HasValue && Model.Deadline.Value.Date < DateTime.Today;
+}
+
+<div class="admin-job-view-page">
+
+    <div class="admin-job-view-head">
+        <a href="@Url.Action("Index", "AdminJobs")" class="admin-job-view-back">
+            <i class="fa fa-arrow-left"></i>
+            Back
+        </a>
+    </div>
+
+    <div class="admin-job-view-card">
+
+        <div class="admin-job-view-top">
+
+            <div class="admin-job-view-logo">
+                @if (Model.Company != null && !string.IsNullOrEmpty(Model.Company.Logo))
+                {
+                    <img src="@Url.Content(Model.Company.Logo)" alt="@Model.Company.CompanyName" />
+                }
+                else
+                {
+                    <span>
+                        @(Model.Company != null && !string.IsNullOrEmpty(Model.Company.CompanyName)
+                            ? Model.Company.CompanyName.Substring(0, 1)
+                            : "J")
+                    </span>
+                }
+            </div>
+
+            <div class="admin-job-view-title">
+                <div class="admin-job-view-status-row">
+
+                    @if (jobIsExpired)
+                    {
+                        <span class="job-view-status expired">Expired</span>
+                    }
+                    else if (Model.Status == "Approved")
+                    {
+                        <span class="job-view-status approved">Approved</span>
+                    }
+                    else if (Model.Status == "Rejected")
+                    {
+                        <span class="job-view-status rejected">Rejected</span>
+                    }
+                    else if (Model.Status == "Closed")
+                    {
+                        <span class="job-view-status closed">Closed</span>
+                    }
+                    else
+                    {
+                        <span class="job-view-status pending">Pending</span>
+                    }
+
+                    @if (Model.IsHot)
+                    {
+                        <span class="job-view-status hot">
+                            <i class="fa fa-fire"></i>
+                            Hot Job
+                        </span>
+                    }
+
+                </div>
+
+                <h2>@Model.Title</h2>
+
+                <p>
+                    @(Model.Company != null ? Model.Company.CompanyName : "Updating")
+                </p>
+            </div>
+
+        </div>
+
+        <div class="admin-job-view-actions">
+
+            @if (Model.Status != "Approved")
+            {
+                <form method="post" action="@Url.Action("Approve", "AdminJobs", new { id = Model.JobID })">
+                    <button type="submit" class="job-view-btn approve">
+                        <i class="fa fa-check"></i>
+                        Approve Job
+                    </button>
+                </form>
+            }
+
+            @if (Model.Status != "Rejected")
+            {
+                <form method="post"
+                      action="@Url.Action("Reject", "AdminJobs", new { id = Model.JobID })"
+                      onsubmit="return confirm('Are you sure you want to reject this job post?');">
+                    <button type="submit" class="job-view-btn reject">
+                        <i class="fa fa-times"></i>
+                        Reject Job
+                    </button>
+                </form>
+            }
+
+            @if (Model.Status != "Closed")
+            {
+                <form method="post"
+                      action="@Url.Action("Close", "AdminJobs", new { id = Model.JobID })"
+                      onsubmit="return confirm('Are you sure you want to close this job post?');">
+                    <button type="submit" class="job-view-btn close">
+                        <i class="fa fa-lock"></i>
+                        Close Job
+                    </button>
+                </form>
+            }
+
+            @if (Model.Status != "Pending")
+            {
+                <form method="post" action="@Url.Action("SetPending", "AdminJobs", new { id = Model.JobID })">
+                    <button type="submit" class="job-view-btn pending">
+                        <i class="fa fa-clock"></i>
+                        Move to Pending
+                    </button>
+                </form>
+            }
+
+        </div>
+
+    </div>
+
+    <div class="admin-job-view-info-grid">
+
+        <div class="admin-job-view-info">
+            <span>Company</span>
+            <strong>@(Model.Company != null ? Model.Company.CompanyName : "Updating")</strong>
+        </div>
+
+        <div class="admin-job-view-info">
+            <span>Category</span>
+            <strong>@(Model.Category != null ? Model.Category.CategoryName : "Uncategorized")</strong>
+        </div>
+
+        <div class="admin-job-view-info">
+            <span>Location</span>
+            <strong>@(string.IsNullOrEmpty(Model.Location) ? "Updating" : Model.Location)</strong>
+        </div>
+
+        <div class="admin-job-view-info">
+            <span>Salary</span>
+            <strong>@(Model.Salary.HasValue ? Model.Salary.Value.ToString("N0") + " USD" : "Negotiable")</strong>
+        </div>
+
+        <div class="admin-job-view-info">
+            <span>Job Type</span>
+            <strong>@(string.IsNullOrEmpty(Model.JobType) ? "Updating" : Model.JobType)</strong>
+        </div>
+
+        <div class="admin-job-view-info">
+            <span>Experience</span>
+            <strong>@(string.IsNullOrEmpty(Model.Experience) ? "No experience required" : Model.Experience)</strong>
+        </div>
+
+        <div class="admin-job-view-info">
+            <span>Hiring Quantity</span>
+            <strong>@Model.HiringQuantity candidate(s)</strong>
+        </div>
+
+        <div class="admin-job-view-info">
+            <span>Remaining Slots</span>
+            <strong>@Model.RemainingSlots slot(s)</strong>
+        </div>
+
+        <div class="admin-job-view-info">
+            <span>Created Date</span>
+            <strong>@(Model.CreatedAt.HasValue ? Model.CreatedAt.Value.ToString("dd/MM/yyyy HH:mm") : "Not available")</strong>
+        </div>
+
+        <div class="admin-job-view-info">
+            <span>Deadline</span>
+            <strong class="@(jobIsExpired ? "job-view-deadline-expired" : "")">
+                @(Model.Deadline.HasValue ? Model.Deadline.Value.ToString("dd/MM/yyyy") : "Not available")
+            </strong>
+        </div>
+
+    </div>
+
+    <div class="admin-job-view-content-grid">
+
+        <div class="admin-job-view-content">
+            <h3>
+                <i class="fa fa-align-left"></i>
+                Job Description
+            </h3>
+
+            <p>@(string.IsNullOrEmpty(Model.Description) ? "Not updated" : Model.Description)</p>
+        </div>
+
+        <div class="admin-job-view-content">
+            <h3>
+                <i class="fa fa-list-check"></i>
+                Job Requirements
+            </h3>
+
+            <p>@(string.IsNullOrEmpty(Model.Requirement) ? "Not updated" : Model.Requirement)</p>
+        </div>
+
+        <div class="admin-job-view-content">
+            <h3>
+                <i class="fa fa-gift"></i>
+                Benefits
+            </h3>
+
+            <p>@(string.IsNullOrEmpty(Model.Benefit) ? "Not updated" : Model.Benefit)</p>
+        </div>
+
+    </div>
+
+</div>

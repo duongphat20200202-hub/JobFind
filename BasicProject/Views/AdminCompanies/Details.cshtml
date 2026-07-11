@@ -1,0 +1,114 @@
+﻿@model BasicProject.Models.Company
+
+@{
+    ViewBag.Title = "Company Details";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="admin-page-head">
+    <a href="@Url.Action("Index", "AdminCompanies")" class="admin-back-btn">
+        Back
+    </a>
+</div>
+
+<div class="admin-detail-card">
+
+    <div class="admin-company-detail-head">
+        <div class="admin-company-logo large">
+            @if (!string.IsNullOrEmpty(Model.Logo))
+            {
+                <img src="@Url.Content(Model.Logo)" alt="@Model.CompanyName" />
+            }
+            else
+            {
+                <span>
+                    @(Model.CompanyName != null ? Model.CompanyName.Substring(0, 1) : "C")
+                </span>
+            }
+        </div>
+
+        <div>
+            <h2>@Model.CompanyName</h2>
+
+            @if (Model.Status == "Approved")
+            {
+                <span class="status-active">Approved</span>
+            }
+            else if (Model.Status == "Rejected")
+            {
+                <span class="status-rejected">Rejected</span>
+            }
+            else
+            {
+                <span class="status-hidden">Pending</span>
+            }
+        </div>
+    </div>
+
+    <div class="admin-detail-grid">
+
+        <div class="admin-detail-item">
+            <label>Email</label>
+            <p>@(string.IsNullOrEmpty(Model.Email) ? "Not updated" : Model.Email)</p>
+        </div>
+
+        <div class="admin-detail-item">
+            <label>Phone Number</label>
+            <p>@(string.IsNullOrEmpty(Model.Phone) ? "Not updated" : Model.Phone)</p>
+        </div>
+
+        <div class="admin-detail-item">
+            <label>Website</label>
+            <p>@(string.IsNullOrEmpty(Model.Website) ? "Not updated" : Model.Website)</p>
+        </div>
+
+        <div class="admin-detail-item">
+            <label>Location</label>
+            <p>@(string.IsNullOrEmpty(Model.Location) ? "Not updated" : Model.Location)</p>
+        </div>
+
+        <div class="admin-detail-item full">
+            <label>Company Description</label>
+            <p>@(string.IsNullOrEmpty(Model.Description) ? "Not updated" : Model.Description)</p>
+        </div>
+
+        <div class="admin-detail-item">
+            <label>Created Date</label>
+            <p>@(Model.CreatedAt.HasValue ? Model.CreatedAt.Value.ToString("dd/MM/yyyy HH:mm") : "Not available")</p>
+        </div>
+
+    </div>
+
+    <div class="admin-detail-actions">
+
+        @if (Model.Status != "Approved")
+        {
+            <form method="post" action="@Url.Action("Approve", "AdminCompanies", new { id = Model.CompanyID })">
+                <button type="submit" class="admin-approve-btn big">
+                    Approve Company
+                </button>
+            </form>
+        }
+
+        @if (Model.Status != "Rejected")
+        {
+            <form method="post" action="@Url.Action("Reject", "AdminCompanies", new { id = Model.CompanyID })"
+                  onsubmit="return confirm('Are you sure you want to reject this company?');">
+                <button type="submit" class="admin-delete-btn big">
+                    Reject Company
+                </button>
+            </form>
+        }
+
+        @if (Model.Status != "Pending")
+        {
+            <form method="post" action="@Url.Action("SetPending", "AdminCompanies", new { id = Model.CompanyID })">
+                <button type="submit" class="admin-pending-btn big">
+                    Move to Pending
+                </button>
+            </form>
+        }
+
+    </div>
+
+</div>

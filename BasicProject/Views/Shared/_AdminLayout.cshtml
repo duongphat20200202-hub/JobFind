@@ -1,0 +1,172 @@
+﻿@{
+    var currentController = ViewContext.RouteData.Values["controller"].ToString();
+
+    string userName = Session["UserName"] != null
+        ? Session["UserName"].ToString()
+        : "admin";
+
+    if (!string.IsNullOrWhiteSpace(userName))
+    {
+        userName = char.ToUpper(userName[0]) + userName.Substring(1).ToLower();
+    }
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title - Admin JobFind</title>
+
+    <link rel="stylesheet" href="@Url.Content("~/Content/Site.css?v=1002")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/AdminBase.css?v=1001")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/AdminDashboard.css?v=1001")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/AdminAccounts.css?v=1001")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/AdminCareerTips.css?v=1001")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/AdminCVTemplates.css?v=1001")" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    @RenderSection("styles", required: false)
+</head>
+
+<body class="admin-layout-body">
+
+    <div class="admin-shell">
+
+        <header class="admin-top-nav">
+
+            <a href="@Url.Action("Index", "AdminDashboard")" class="admin-brand">
+                <img src="@Url.Content("~/Content/images/headerlogo.jpg")" alt="JobFind" class="admin-brand-img" />
+            </a>
+
+            <div class="admin-top-search">
+                <i class="fa fa-search"></i>
+                <input type="text" placeholder="Search dashboard..." />
+            </div>
+
+            <div class="admin-top-actions">
+
+                @Html.Action("NotificationMenu", "AdminDashboard")
+
+                <a href="@Url.Action("Index", "Home")" class="admin-top-icon" title="Homepage">
+                    <i class="fa fa-home"></i>
+                </a>
+
+                <div class="admin-top-dropdown" data-admin-dropdown>
+                    <button type="button" class="admin-account-btn" data-dropdown-toggle>
+                        <i class="fa fa-user-shield"></i>
+                        <span>@userName</span>
+                        <i class="fa fa-angle-down"></i>
+                    </button>
+
+                    <div class="admin-dropdown-menu admin-account-menu">
+                        <a href="@Url.Action("Index", "Home")">
+                            <i class="fa fa-home"></i>
+                            Back to Homepage
+                        </a>
+
+                        <a href="@Url.Action("Logout", "Account")" class="logout">
+                            <i class="fa fa-right-from-bracket"></i>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+        </header>
+
+        <div class="admin-body">
+
+            <aside class="admin-sidebar">
+                <nav class="admin-menu">
+
+                    <a href="@Url.Action("Index", "AdminDashboard")"
+                       class="@(currentController == "AdminDashboard" ? "active" : "")">
+                        <i class="fa fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+
+                    <a href="@Url.Action("Index", "AdminUsers")"
+                       class="@(currentController == "AdminUsers" ? "active" : "")">
+                        <i class="fa fa-users"></i>
+                        <span>Accounts</span>
+                    </a>
+
+                    <a href="@Url.Action("Index", "AdminCompanies")"
+                       class="@(currentController == "AdminCompanies" ? "active" : "")">
+                        <i class="fa fa-building"></i>
+                        <span>Companies</span>
+                    </a>
+
+                    <a href="@Url.Action("Index", "AdminJobs")"
+                       class="@(currentController == "AdminJobs" ? "active" : "")">
+                        <i class="fa fa-briefcase"></i>
+                        <span>Job Posts</span>
+                    </a>
+
+                    <a href="@Url.Action("Index", "AdminApplications")"
+                       class="@(currentController == "AdminApplications" ? "active" : "")">
+                        <i class="fa fa-file-signature"></i>
+                        <span>Applications</span>
+                    </a>
+
+                    <a href="@Url.Action("Index", "AdminCareerTips")"
+                       class="@(currentController == "AdminCareerTips" ? "active" : "")">
+                        <i class="fa fa-newspaper"></i>
+                        <span>Career Tips</span>
+                    </a>
+
+                    <a href="@Url.Action("Index", "AdminCVTemplates")"
+                       class="@(currentController == "AdminCVTemplates" ? "active" : "")">
+                        <i class="fa fa-file-lines"></i>
+                        <span>CV Templates</span>
+                    </a>
+
+                </nav>
+            </aside>
+
+            <main class="admin-main">
+                <div class="admin-content">
+                    @RenderBody()
+                </div>
+            </main>
+
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const dropdowns = document.querySelectorAll("[data-admin-dropdown]");
+
+            dropdowns.forEach(function (dropdown) {
+                const button = dropdown.querySelector("[data-dropdown-toggle]");
+
+                if (button) {
+                    button.addEventListener("click", function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        dropdowns.forEach(function (item) {
+                            if (item !== dropdown) {
+                                item.classList.remove("open");
+                            }
+                        });
+
+                        dropdown.classList.toggle("open");
+                    });
+                }
+            });
+
+            document.addEventListener("click", function () {
+                dropdowns.forEach(function (dropdown) {
+                    dropdown.classList.remove("open");
+                });
+            });
+        });
+    </script>
+
+    @RenderSection("scripts", required: false)
+
+</body>
+</html>

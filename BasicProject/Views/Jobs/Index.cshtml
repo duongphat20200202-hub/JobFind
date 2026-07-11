@@ -1,0 +1,548 @@
+﻿@model IEnumerable<BasicProject.Models.Job>
+
+@{
+    ViewBag.Title = "Job List";
+
+    string currentKeyword = ViewBag.Keyword as string;
+    string currentCompany = ViewBag.Company as string;
+    string currentLocation = ViewBag.Location as string;
+    string currentPostedWithin = ViewBag.PostedWithin as string;
+    string currentJobType = ViewBag.JobType as string;
+    string currentExperience = ViewBag.Experience as string;
+
+    int? currentCategoryId = ViewBag.CategoryId as int?;
+    int? currentMinSalary = ViewBag.MinSalary as int?;
+    int? currentMaxSalary = ViewBag.MaxSalary as int?;
+    var acceptedCounts = ViewBag.AcceptedCounts as Dictionary<int, int>;
+}
+
+<div class="jobs-page">
+
+    <div class="container">
+
+        <div class="jobs-top">
+            @if (!string.IsNullOrEmpty(currentKeyword))
+            {
+                <h1>Search Results</h1>
+                <p class="jobs-count">Found @(ViewBag.TotalJobs ?? 0) job(s) for "@currentKeyword"</p>
+            }
+            else
+            {
+                <h1>All Jobs</h1>
+                <p class="jobs-count">Found @(ViewBag.TotalJobs ?? 0) job(s)</p>
+            }
+        </div>
+
+        <form class="jobs-search-new" method="get" action="@Url.Action("Index", "Jobs")">
+
+            <div class="jobs-search-main-row">
+
+                <div class="jobs-search-input job-search-suggest-wrap">
+                    <i class="fa fa-search"></i>
+
+                    <input type="text"
+                           name="keyword"
+                           id="jobKeywordInput"
+                           value="@currentKeyword"
+                           placeholder="Job title, keyword, level..."
+                           autocomplete="off" />
+
+                    <div class="job-suggestion-box" id="jobSuggestionBox"></div>
+                </div>
+
+                <div class="jobs-search-input">
+                    <i class="fa fa-building"></i>
+                    <input type="text"
+                           name="company"
+                           value="@currentCompany"
+                           placeholder="Company name..." />
+                </div>
+
+                <button type="submit" class="jobs-search-btn">
+                    <i class="fa fa-search"></i> Search
+                </button>
+
+            </div>
+
+            <div class="jobs-search-filter-row">
+
+                <div class="jobs-search-input">
+                    <i class="fa fa-folder"></i>
+                    <select name="categoryId">
+                        <option value="">All Categories</option>
+
+                        @if (ViewBag.Categories != null)
+                        {
+                            foreach (var cate in ViewBag.Categories)
+                            {
+                                <option value="@cate.CategoryID" @(currentCategoryId == cate.CategoryID ? "selected" : "")>
+                                    @cate.CategoryName
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="jobs-search-input">
+                    <i class="fa fa-map-marker"></i>
+                    <select name="location">
+                        <option value="">All Locations</option>
+                        <option value="Hồ Chí Minh" @(currentLocation == "Hồ Chí Minh" ? "selected" : "")>Ho Chi Minh City</option>
+                        <option value="Hà Nội" @(currentLocation == "Hà Nội" ? "selected" : "")>Ha Noi</option>
+                        <option value="Đà Nẵng" @(currentLocation == "Đà Nẵng" ? "selected" : "")>Da Nang</option>
+                        <option value="Đồng Nai" @(currentLocation == "Đồng Nai" ? "selected" : "")>Dong Nai</option>
+                        <option value="Bình Dương" @(currentLocation == "Bình Dương" ? "selected" : "")>Binh Duong</option>
+                        <option value="Hải Phòng" @(currentLocation == "Hải Phòng" ? "selected" : "")>Hai Phong</option>
+                        <option value="Remote" @(currentLocation == "Remote" ? "selected" : "")>Remote</option>
+                    </select>
+                </div>
+
+                <div class="jobs-search-input">
+                    <i class="fa fa-calendar"></i>
+                    <select name="postedWithin">
+                        <option value="">Posted Anytime</option>
+                        <option value="today" @(currentPostedWithin == "today" ? "selected" : "")>Today</option>
+                        <option value="3days" @(currentPostedWithin == "3days" ? "selected" : "")>Last 3 days</option>
+                        <option value="7days" @(currentPostedWithin == "7days" ? "selected" : "")>Last 7 days</option>
+                        <option value="14days" @(currentPostedWithin == "14days" ? "selected" : "")>Last 14 days</option>
+                        <option value="30days" @(currentPostedWithin == "30days" ? "selected" : "")>Last 30 days</option>
+                    </select>
+                </div>
+
+            </div>
+
+        </form>
+
+        <div class="jobs-layout">
+
+            <aside class="jobs-filter">
+
+                <h3>Quick Filter</h3>
+
+                <form method="get" action="@Url.Action("Index", "Jobs")" class="quick-filter-form">
+
+                    <input type="hidden" name="keyword" value="@currentKeyword" />
+                    <input type="hidden" name="company" value="@currentCompany" />
+                    <input type="hidden" name="location" value="@currentLocation" />
+                    <input type="hidden" name="categoryId" value="@currentCategoryId" />
+                    <input type="hidden" name="postedWithin" value="@currentPostedWithin" />
+
+                    <div class="filter-group salary-range-filter">
+                        <h4>Salary Range</h4>
+
+                        @{
+                            int minSalaryValue = currentMinSalary.HasValue ? currentMinSalary.Value : 0;
+                            int maxSalaryValue = currentMaxSalary.HasValue ? currentMaxSalary.Value : 3000;
+                        }
+
+                        <div class="salary-range-box">
+
+                            <div class="salary-range-slider">
+                                <div class="salary-range-track" id="salaryRangeTrack"></div>
+
+                                <input type="range"
+                                       id="salaryMinRange"
+                                       min="0"
+                                       max="3000"
+                                       step="100"
+                                       value="@minSalaryValue" />
+
+                                <input type="range"
+                                       id="salaryMaxRange"
+                                       min="0"
+                                       max="3000"
+                                       step="100"
+                                       value="@maxSalaryValue" />
+                            </div>
+
+                            <div class="salary-value-row">
+
+                                <div class="salary-value-box">
+                                    <label>Minimum</label>
+                                    <div>
+                                        <input type="number"
+                                               id="salaryMinInput"
+                                               name="minSalary"
+                                               min="0"
+                                               max="3000"
+                                               step="100"
+                                               value="@minSalaryValue" />
+                                        <span>USD</span>
+                                    </div>
+                                </div>
+
+                                <span class="salary-dash">-</span>
+
+                                <div class="salary-value-box">
+                                    <label>Maximum</label>
+                                    <div>
+                                        <input type="number"
+                                               id="salaryMaxInput"
+                                               name="maxSalary"
+                                               min="0"
+                                               max="3000"
+                                               step="100"
+                                               value="@maxSalaryValue" />
+                                        <span>USD</span>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <p class="salary-note">
+                                Drag the slider to choose a suitable salary range.
+                            </p>
+
+                        </div>
+                    </div>
+
+
+                    <div class="filter-group">
+                        <h4>Job Type</h4>
+
+                        <label class="filter-radio">
+                            <input type="radio" name="jobType" value="" @(string.IsNullOrEmpty(currentJobType) ? "checked" : "") />
+                            <span>All Job Types</span>
+                        </label>
+
+                        <label class="filter-radio">
+                            <input type="radio" name="jobType" value="Full-time" @(currentJobType == "Full-time" ? "checked" : "") />
+                            <span>Full-time</span>
+                        </label>
+
+                        <label class="filter-radio">
+                            <input type="radio" name="jobType" value="Part-time" @(currentJobType == "Part-time" ? "checked" : "") />
+                            <span>Part-time</span>
+                        </label>
+
+                        <label class="filter-radio">
+                            <input type="radio" name="jobType" value="Internship" @(currentJobType == "Internship" ? "checked" : "") />
+                            <span>Internship</span>
+                        </label>
+
+                        <label class="filter-radio">
+                            <input type="radio" name="jobType" value="Remote" @(currentJobType == "Remote" ? "checked" : "") />
+                            <span>Remote</span>
+                        </label>
+
+                        <label class="filter-radio">
+                            <input type="radio" name="jobType" value="Hybrid" @(currentJobType == "Hybrid" ? "checked" : "") />
+                            <span>Hybrid</span>
+                        </label>
+
+                        <label class="filter-radio">
+                            <input type="radio" name="jobType" value="Freelance" @(currentJobType == "Freelance" ? "checked" : "") />
+                            <span>Freelance</span>
+                        </label>
+                    </div>
+
+                    <div class="filter-group">
+                        <h4>Experience</h4>
+
+                        <label class="filter-radio">
+                            <input type="radio" name="experience" value="" @(string.IsNullOrEmpty(currentExperience) ? "checked" : "") />
+                            <span>All Experience</span>
+                        </label>
+
+                        <label class="filter-radio">
+                            <input type="radio" name="experience" value="No experience" @(currentExperience == "No experience" ? "checked" : "") />
+                            <span>No experience</span>
+                        </label>
+
+                        <label class="filter-radio">
+                            <input type="radio" name="experience" value="Intern" @(currentExperience == "Intern" ? "checked" : "") />
+                            <span>Intern</span>
+                        </label>
+
+                        <label class="filter-radio">
+                            <input type="radio" name="experience" value="Fresher" @(currentExperience == "Fresher" ? "checked" : "") />
+                            <span>Fresher</span>
+                        </label>
+
+                        <label class="filter-radio">
+                            <input type="radio" name="experience" value="Junior" @(currentExperience == "Junior" ? "checked" : "") />
+                            <span>Junior</span>
+                        </label>
+
+                        <label class="filter-radio">
+                            <input type="radio" name="experience" value="Senior" @(currentExperience == "Senior" ? "checked" : "") />
+                            <span>Senior</span>
+                        </label>
+
+                        <label class="filter-radio">
+                            <input type="radio" name="experience" value="Manager" @(currentExperience == "Manager" ? "checked" : "") />
+                            <span>Manager</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="quick-filter-btn">
+                        Apply Filter
+                    </button>
+
+                    <a href="@Url.Action("Index", "Jobs")" class="quick-clear-btn">
+                        Clear Filter
+                    </a>
+
+                </form>
+
+            </aside>
+
+            <div class="jobs-result">
+
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var job in Model)
+                    {
+                        bool jobExpired = job.Deadline.HasValue && job.Deadline.Value.Date < DateTime.Today;
+
+                        int acceptedCount = 0;
+
+                        if (acceptedCounts != null && acceptedCounts.ContainsKey(job.JobID))
+                        {
+                            acceptedCount = acceptedCounts[job.JobID];
+                        }
+
+                        int hiringQuantity = job.HiringQuantity;
+                        int remainingSlots = hiringQuantity - acceptedCount;
+
+                        if (remainingSlots < 0)
+                        {
+                            remainingSlots = 0;
+                        }
+
+                        bool jobFull = hiringQuantity > 0 && remainingSlots <= 0;
+
+                        <a href="@Url.Action("Details", "Jobs", new { id = job.JobID })" class="job-list-card">
+
+                            <div class="job-list-logo">
+                                @if (job.Company != null && !string.IsNullOrEmpty(job.Company.Logo))
+                                {
+                                    <img src="@Url.Content(job.Company.Logo)" alt="@job.Company.CompanyName" />
+                                }
+                                else
+                                {
+                                    <span>
+                                        @(job.Company != null && !string.IsNullOrEmpty(job.Company.CompanyName)
+                                            ? job.Company.CompanyName.Substring(0, 1)
+                                            : "J")
+                                    </span>
+                                }
+                            </div>
+
+                            <div class="job-list-info">
+
+                                <h3>@job.Title</h3>
+
+                                <p class="company-name">
+                                    @(job.Company != null ? job.Company.CompanyName : "Updating")
+                                </p>
+
+                                <div class="job-list-meta">
+
+                                    <span>
+                                        <i class="fa fa-map-marker"></i>
+                                        @(string.IsNullOrEmpty(job.Location) ? "Updating" : job.Location)
+                                    </span>
+
+                                    <span>
+                                        <i class="fa fa-briefcase"></i>
+                                        @(string.IsNullOrEmpty(job.Experience) ? "No experience required" : job.Experience)
+                                    </span>
+
+                                    <span>
+                                        <i class="fa fa-folder"></i>
+                                        @(job.Category != null ? job.Category.CategoryName : "Uncategorized")
+                                    </span>
+
+                                    <span>
+                                        <i class="fa fa-clock-o"></i>
+                                        @(string.IsNullOrEmpty(job.JobType) ? "Full-time" : job.JobType)
+                                    </span>
+
+                                    <span class="job-deadline @(jobExpired ? "expired" : "")">
+                                        <i class="fa fa-calendar"></i>
+                                        @(job.Deadline.HasValue ? job.Deadline.Value.ToString("dd/MM/yyyy") : "No deadline")
+                                    </span>
+
+                                    <span class="job-slot @(jobFull ? "full" : "")">
+                                        <i class="fa fa-users"></i>
+                                        @(jobFull ? "Full" : remainingSlots + " / " + hiringQuantity + " slots")
+                                    </span>
+
+                                </div>
+
+                                <strong>
+                                    @(job.Salary.HasValue && job.Salary.Value > 0
+                                        ? job.Salary.Value.ToString("N0") + " USD"
+                                        : "Negotiable")
+                                </strong>
+
+                            </div>
+
+                            <div class="job-list-actions">
+
+                                <span class="job-save-btn"
+                                      title="Save Job"
+                                      onclick="event.preventDefault(); event.stopPropagation(); window.location.href='@Url.Action("Save", "SavedJobs", new { jobId = job.JobID })';">
+                                    <i class="fa fa-heart-o"></i>
+                                </span>
+
+                            </div>
+
+                            @if (job.IsHot)
+                            {
+                                <div class="job-hot">
+                                    HOT JOB
+                                </div>
+                            }
+
+                        </a>
+                    }
+                }
+                else
+                {
+                    <div class="empty-jobs">
+                        <h3>No matching jobs found</h3>
+                        <p>Try searching with another keyword, location or salary range.</p>
+                        <a href="@Url.Action("Index", "Jobs")">View All Jobs</a>
+                    </div>
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    const keywordInput = document.getElementById("jobKeywordInput");
+    const suggestionBox = document.getElementById("jobSuggestionBox");
+
+    let suggestTimer = null;
+
+    if (keywordInput && suggestionBox) {
+        keywordInput.addEventListener("input", function () {
+            const keyword = this.value.trim();
+
+            clearTimeout(suggestTimer);
+
+            if (keyword.length < 2) {
+                suggestionBox.style.display = "none";
+                suggestionBox.innerHTML = "";
+                return;
+            }
+
+            suggestTimer = setTimeout(function () {
+                fetch("@Url.Action("Suggest", "Jobs")?keyword=" + encodeURIComponent(keyword))
+                    .then(function (response) {
+                        return response.json();
+                    })
+                    .then(function (data) {
+                        suggestionBox.innerHTML = "";
+
+                        if (!data || data.length === 0) {
+                            suggestionBox.style.display = "none";
+                            return;
+                        }
+
+                        data.forEach(function (item) {
+                            const div = document.createElement("div");
+                            div.className = "job-suggestion-item";
+                            div.innerHTML = '<i class="fa fa-search"></i> ' + item;
+
+                            div.addEventListener("click", function () {
+                                keywordInput.value = item;
+                                suggestionBox.style.display = "none";
+                            });
+
+                            suggestionBox.appendChild(div);
+                        });
+
+                        suggestionBox.style.display = "block";
+                    })
+                    .catch(function () {
+                        suggestionBox.style.display = "none";
+                    });
+            }, 350);
+        });
+
+        document.addEventListener("click", function (e) {
+            if (!e.target.closest(".job-search-suggest-wrap")) {
+                suggestionBox.style.display = "none";
+            }
+        });
+    }
+</script>
+<script>
+    const salaryMinRange = document.getElementById("salaryMinRange");
+    const salaryMaxRange = document.getElementById("salaryMaxRange");
+    const salaryMinInput = document.getElementById("salaryMinInput");
+    const salaryMaxInput = document.getElementById("salaryMaxInput");
+    const salaryRangeTrack = document.getElementById("salaryRangeTrack");
+
+    function updateSalaryRange() {
+        if (!salaryMinRange || !salaryMaxRange || !salaryMinInput || !salaryMaxInput || !salaryRangeTrack) {
+            return;
+        }
+
+        let minValue = parseInt(salaryMinRange.value);
+        let maxValue = parseInt(salaryMaxRange.value);
+
+        if (minValue > maxValue - 100) {
+            minValue = maxValue - 100;
+            salaryMinRange.value = minValue;
+        }
+
+        if (maxValue < minValue + 100) {
+            maxValue = minValue + 100;
+            salaryMaxRange.value = maxValue;
+        }
+
+        salaryMinInput.value = minValue;
+        salaryMaxInput.value = maxValue;
+
+        const maxLimit = parseInt(salaryMaxRange.max);
+        const leftPercent = (minValue / maxLimit) * 100;
+        const rightPercent = (maxValue / maxLimit) * 100;
+
+        salaryRangeTrack.style.left = leftPercent + "%";
+        salaryRangeTrack.style.width = (rightPercent - leftPercent) + "%";
+    }
+
+    function updateSalaryFromInput() {
+        if (!salaryMinRange || !salaryMaxRange || !salaryMinInput || !salaryMaxInput) {
+            return;
+        }
+
+        let minValue = parseInt(salaryMinInput.value || 0);
+        let maxValue = parseInt(salaryMaxInput.value || 3000);
+
+        if (minValue < 0) {
+            minValue = 0;
+        }
+
+        if (maxValue > 3000) {
+            maxValue = 3000;
+        }
+
+        if (minValue > maxValue - 100) {
+            minValue = maxValue - 100;
+        }
+
+        salaryMinRange.value = minValue;
+        salaryMaxRange.value = maxValue;
+
+        updateSalaryRange();
+    }
+
+    if (salaryMinRange && salaryMaxRange) {
+        salaryMinRange.addEventListener("input", updateSalaryRange);
+        salaryMaxRange.addEventListener("input", updateSalaryRange);
+        salaryMinInput.addEventListener("input", updateSalaryFromInput);
+        salaryMaxInput.addEventListener("input", updateSalaryFromInput);
+
+        updateSalaryRange();
+    }
+</script>

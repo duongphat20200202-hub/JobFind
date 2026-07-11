@@ -1,0 +1,270 @@
+﻿@model BasicProject.Models.ArticleJson
+
+@{
+    ViewBag.Title = "Edit Career Tip";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@if (ViewBag.Error != null)
+{
+    <div class="auth-error">
+        @ViewBag.Error
+    </div>
+}
+
+<form method="post"
+      action="@Url.Action("Edit", "AdminCareerTips", new { id = Model.ArticleID })"
+      enctype="multipart/form-data"
+      class="admin-article-form">
+
+    <div class="form-group">
+        <label>Career Tip Title</label>
+        <input type="text" name="title" value="@Model.Title" />
+    </div>
+
+    <div class="form-group">
+        <label>Category</label>
+        <select name="category">
+            <option value="Career Orientation" @(Model.Category == "Career Orientation" ? "selected" : "")>
+                Career Orientation
+            </option>
+
+            <option value="Career Advice" @(Model.Category == "Career Advice" ? "selected" : "")>
+                Career Advice
+            </option>
+
+            <option value="CV / Resume Writing" @(Model.Category == "CV / Resume Writing" ? "selected" : "")>
+                CV / Resume Writing
+            </option>
+
+            <option value="Job Interview" @(Model.Category == "Job Interview" ? "selected" : "")>
+                Job Interview
+            </option>
+
+            <option value="Workplace Skills" @(Model.Category == "Workplace Skills" ? "selected" : "")>
+                Workplace Skills
+            </option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Show Article For</label>
+        <select name="targetAudience">
+            <option value="Candidate" @(Model.TargetAudience == "Candidate" || string.IsNullOrEmpty(Model.TargetAudience) ? "selected" : "")>
+                Candidate
+            </option>
+
+            <option value="Employer" @(Model.TargetAudience == "Employer" ? "selected" : "")>
+                Employer
+            </option>
+        </select>
+
+        <small>
+            Candidate articles will appear on the candidate Career Tips page.
+            Employer articles will appear on the employer public page.
+        </small>
+    </div>
+
+    <div class="form-group">
+        <label>Current Thumbnail</label>
+
+        @if (!string.IsNullOrEmpty(Model.Thumbnail))
+        {
+            <div class="admin-current-image-box">
+                <p>
+                    <strong>Current thumbnail:</strong>
+                    <a href="@Url.Content(Model.Thumbnail)" target="_blank">
+                        View current image
+                    </a>
+                </p>
+
+                <img src="@Url.Content(Model.Thumbnail)" class="admin-article-preview" />
+            </div>
+        }
+        else
+        {
+            <p>No thumbnail image yet.</p>
+        }
+
+        <label>Choose New Thumbnail</label>
+
+        <input type="file"
+               name="thumbnailFile"
+               id="thumbnailFile"
+               accept="image/*"
+               onchange="previewImage(this, 'thumbnailPreviewBox', 'thumbnailPreviewImg', 'thumbnailFileName')" />
+
+        <small>If you do not choose a new image, the old image will be kept.</small>
+
+        <div class="admin-image-preview-box" id="thumbnailPreviewBox" style="display:none;">
+            <p>
+                <strong>New selected thumbnail:</strong>
+                <span id="thumbnailFileName"></span>
+            </p>
+
+            <img id="thumbnailPreviewImg" src="#" alt="Thumbnail preview" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Short Summary</label>
+        <textarea name="summary">@Model.Summary</textarea>
+    </div>
+
+    <div class="form-group">
+        <label>Career Tip Content</label>
+
+        <textarea name="content"
+                  id="careerTipContent"
+                  class="article-content-editor"
+                  placeholder="Write normally. When you want to insert an image, choose an image below and click Insert image here.">@Model.Content</textarea>
+
+        <small>
+            You can write normally. To insert new uploaded images inside the article, place your cursor in the content and click “Insert image here”.
+        </small>
+    </div>
+
+    <div class="form-group">
+        <label>Add More Images Inside Article</label>
+
+        <div class="admin-content-image-item">
+            <input type="file"
+                   name="contentImage1"
+                   id="contentImage1"
+                   accept="image/*"
+                   onchange="previewImage(this, 'contentImagePreviewBox1', 'contentImagePreviewImg1', 'contentImageFileName1')" />
+
+            <button type="button"
+                    class="admin-insert-image-btn"
+                    onclick="insertImageMarker('[image1]')">
+                Insert image 1 here
+            </button>
+
+            <small>This image will appear where [image1] is inserted in the content.</small>
+
+            <div class="admin-image-preview-box" id="contentImagePreviewBox1" style="display:none;">
+                <p>
+                    <strong>Selected image 1:</strong>
+                    <span id="contentImageFileName1"></span>
+                </p>
+
+                <img id="contentImagePreviewImg1" src="#" alt="Content image 1 preview" />
+            </div>
+        </div>
+
+        <div class="admin-content-image-item">
+            <input type="file"
+                   name="contentImage2"
+                   id="contentImage2"
+                   accept="image/*"
+                   onchange="previewImage(this, 'contentImagePreviewBox2', 'contentImagePreviewImg2', 'contentImageFileName2')" />
+
+            <button type="button"
+                    class="admin-insert-image-btn"
+                    onclick="insertImageMarker('[image2]')">
+                Insert image 2 here
+            </button>
+
+            <small>This image will appear where [image2] is inserted in the content.</small>
+
+            <div class="admin-image-preview-box" id="contentImagePreviewBox2" style="display:none;">
+                <p>
+                    <strong>Selected image 2:</strong>
+                    <span id="contentImageFileName2"></span>
+                </p>
+
+                <img id="contentImagePreviewImg2" src="#" alt="Content image 2 preview" />
+            </div>
+        </div>
+
+        <div class="admin-content-image-item">
+            <input type="file"
+                   name="contentImage3"
+                   id="contentImage3"
+                   accept="image/*"
+                   onchange="previewImage(this, 'contentImagePreviewBox3', 'contentImagePreviewImg3', 'contentImageFileName3')" />
+
+            <button type="button"
+                    class="admin-insert-image-btn"
+                    onclick="insertImageMarker('[image3]')">
+                Insert image 3 here
+            </button>
+
+            <small>This image will appear where [image3] is inserted in the content.</small>
+
+            <div class="admin-image-preview-box" id="contentImagePreviewBox3" style="display:none;">
+                <p>
+                    <strong>Selected image 3:</strong>
+                    <span id="contentImageFileName3"></span>
+                </p>
+
+                <img id="contentImagePreviewImg3" src="#" alt="Content image 3 preview" />
+            </div>
+        </div>
+    </div>
+
+    <div class="form-check">
+        <input type="checkbox" name="isActive" value="true" @(Model.IsActive ? "checked" : "") />
+        <label>Show this career tip</label>
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="admin-submit-btn">
+            Update Career Tip
+        </button>
+
+        <a href="@Url.Action("Index", "AdminCareerTips")" class="admin-back-btn">
+            Back
+        </a>
+    </div>
+
+</form>
+
+<script>
+    function previewImage(input, boxId, imageId, fileNameId) {
+        var box = document.getElementById(boxId);
+        var image = document.getElementById(imageId);
+        var fileName = document.getElementById(fileNameId);
+
+        if (!input.files || !input.files[0]) {
+            box.style.display = "none";
+            image.src = "#";
+            fileName.innerText = "";
+            return;
+        }
+
+        var file = input.files[0];
+
+        fileName.innerText = file.name;
+
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            image.src = e.target.result;
+            box.style.display = "block";
+        };
+
+        reader.readAsDataURL(file);
+    }
+
+    function insertImageMarker(marker) {
+        var textarea = document.getElementById("careerTipContent");
+
+        if (!textarea) {
+            return;
+        }
+
+        var start = textarea.selectionStart;
+        var end = textarea.selectionEnd;
+        var text = textarea.value;
+
+        var insertText = "\n\n" + marker + "\n\n";
+
+        textarea.value = text.substring(0, start) + insertText + text.substring(end);
+
+        textarea.focus();
+
+        var newCursorPosition = start + insertText.length;
+        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
+    }
+</script>

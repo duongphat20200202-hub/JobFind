@@ -1,0 +1,195 @@
+﻿@{
+    string userName = Session["UserName"] != null
+        ? Session["UserName"].ToString()
+        : "Account";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>@ViewBag.Title - Employer Services</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <link href="@Url.Content("~/Content/bootstrap.css")" rel="stylesheet" />
+    <link href="@Url.Content("~/Content/Site.css")?v=@DateTime.Now.Ticks" rel="stylesheet" />
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+
+<body class="emp-public-body">
+
+    <header class="emp-public-header">
+        <div class="emp-public-header-inner">
+
+            <!-- LOGO -->
+            <a href="@Url.Action("Index", "EmployerServices")" class="emp-public-logo">
+                <img src="@Url.Content("~/Content/images/headerlogo.jpg")" alt="JobFind Logo" />
+            </a>
+
+            <!-- RIGHT ACTIONS -->
+            <div class="emp-public-header-actions">
+
+                <!-- ACCOUNT -->
+                <div class="emp-public-account-area">
+
+                    <button type="button"
+                            class="emp-public-account-button"
+                            onclick="toggleEmployerPublicAccountMenu(event)">
+
+                        <span class="emp-public-account-avatar">
+                            <i class="fa fa-user"></i>
+                        </span>
+
+                        <span class="emp-public-account-name">
+                            @userName
+                        </span>
+
+                        <i class="fa fa-angle-down"></i>
+                    </button>
+
+                    <div class="emp-public-account-dropdown" id="employerPublicAccountMenu">
+
+                        @if (Session["UserID"] == null)
+                        {
+                            <div class="emp-public-dropdown-menu">
+
+                                <a href="@Url.Action("Login", "Account", new { role = "Employer" })">
+                                    <i class="fa fa-sign-in"></i>
+                                    Employer Login
+                                </a>
+
+                                <a href="@Url.Action("Register", "Account", new { role = "Employer" })">
+                                    <i class="fa fa-building"></i>
+                                    Employer Register
+                                </a>
+
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="emp-public-dropdown-menu">
+
+                                @if (Session["Role"] != null && Session["Role"].ToString() == "Employer")
+                                {
+                                    <a href="@Url.Action("Index", "EmployerDashboard")">
+                                        <i class="fa fa-dashboard"></i>
+                                        Employer Dashboard
+                                    </a>
+                                }
+
+                                @if (Session["Role"] != null && Session["Role"].ToString() == "Admin")
+                                {
+                                    <a href="@Url.Action("Index", "AdminDashboard")">
+                                        <i class="fa fa-dashboard"></i>
+                                        Admin Dashboard
+                                    </a>
+                                }
+
+                                <a href="@Url.Action("Profile", "Account")">
+                                    <i class="fa fa-user-circle"></i>
+                                    My Profile
+                                </a>
+
+                                <a href="@Url.Action("Logout", "Account")" class="logout-link">
+                                    <i class="fa fa-sign-out"></i>
+                                    Logout
+                                </a>
+
+                            </div>
+                        }
+
+                    </div>
+                </div>
+
+                <!-- SWITCH TO CANDIDATE SITE -->
+                <a href="@Url.Action("Index", "Home")" class="emp-public-switch-btn">
+                    <i class="fa fa-user"></i>
+                    For Candidate
+                </a>
+
+            </div>
+
+        </div>
+    </header>
+
+    @RenderBody()
+
+    <footer class="emp-public-footer">
+        <div class="emp-public-footer-inner">
+
+            <div class="emp-public-footer-grid">
+
+                <div class="emp-public-footer-column">
+                    <h3>JOB FIND</h3>
+                    <p>
+                        Recruitment solution for employers. Post jobs, manage candidates,
+                        and promote your company professionally.
+                    </p>
+                </div>
+
+                <div class="emp-public-footer-column">
+                    <h4>Employer Center</h4>
+                    <a href="@Url.Action("Index", "EmployerServices")">Recruitment Solution</a>
+                    <a href="@Url.Action("Login", "Account", new { role = "Employer" })">Employer Login</a>
+                    <a href="@Url.Action("RegisterEmployer", "Account")">Create Employer Account</a>
+                </div>
+
+                <div class="emp-public-footer-column">
+                    <h4>For Candidates</h4>
+                    <a href="@Url.Action("Index", "Home")">Candidate Site</a>
+                    <a href="@Url.Action("Index", "Jobs")">Find Jobs</a>
+                    <a href="@Url.Action("Index", "CVTemplates")">CV Templates</a>
+                </div>
+
+                <div class="emp-public-footer-column">
+                    <h4>Contact</h4>
+                    <p><i class="fa fa-envelope"></i> support@jobfind.vn</p>
+                    <p><i class="fa fa-phone"></i> 0123 456 789</p>
+                    <p><i class="fa fa-map-marker"></i> Hồ Chí Minh, Việt Nam</p>
+                </div>
+
+            </div>
+
+            <div class="emp-public-footer-bottom">
+                <p>&copy; @DateTime.Now.Year - JOB FIND Employer Services. All rights reserved.</p>
+            </div>
+
+        </div>
+    </footer>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+
+    @RenderSection("scripts", required: false)
+
+    <script>
+        function toggleEmployerPublicAccountMenu(e) {
+            e.stopPropagation();
+
+            var menu = document.getElementById("employerPublicAccountMenu");
+
+            if (menu) {
+                menu.classList.toggle("show");
+            }
+        }
+
+        document.addEventListener("click", function (event) {
+            if (!event.target.closest(".emp-public-account-area")) {
+                var menu = document.getElementById("employerPublicAccountMenu");
+
+                if (menu) {
+                    menu.classList.remove("show");
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>

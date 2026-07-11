@@ -1,0 +1,304 @@
+﻿@using BasicProject.Services
+@model IEnumerable<BasicProject.Models.Application>
+
+@{
+    ViewBag.Title = "Applications";
+    Layout = "~/Views/Shared/_EmployerLayout.cshtml";
+
+    var job = ViewBag.Job as BasicProject.Models.Job;
+    var aiScores = ViewBag.AiScores as Dictionary<int, CvMatchResult>;
+
+    string keyword = ViewBag.Keyword as string;
+    string status = ViewBag.Status as string;
+    string matchLevel = ViewBag.MatchLevel as string;
+    string sort = ViewBag.Sort as string;
+}
+
+<div class="employer-app-page">
+
+    <div class="employer-page-head">
+        <div>
+            <h1>Candidate Applications</h1>
+
+            @if (job != null)
+            {
+                <p>
+                    Smart matching results for:
+                    <strong>@job.Title</strong>
+                </p>
+            }
+            else
+            {
+                <p>Smart matching results for this job.</p>
+            }
+        </div>
+
+        <a href="@Url.Action("Index", "EmployerApplications")" class="employer-add-btn">
+            Back
+        </a>
+    </div>
+
+    <div class="application-stats-grid">
+        <div class="application-stat-card">
+            <strong>@ViewBag.TotalApplications</strong>
+            <span>Total CVs</span>
+        </div>
+
+        <div class="application-stat-card excellent">
+            <strong>@ViewBag.ExcellentCount</strong>
+            <span>Excellent Match</span>
+        </div>
+
+        <div class="application-stat-card good">
+            <strong>@ViewBag.GoodCount</strong>
+            <span>Good Match</span>
+        </div>
+
+        <div class="application-stat-card pending">
+            <strong>@ViewBag.PendingCount</strong>
+            <span>Pending</span>
+        </div>
+
+        <div class="application-stat-card accepted">
+            <strong>@ViewBag.AcceptedCount</strong>
+            <span>Accepted</span>
+        </div>
+
+        <div class="application-stat-card rejected">
+            <strong>@ViewBag.RejectedCount</strong>
+            <span>Rejected</span>
+        </div>
+    </div>
+
+    <form method="get"
+          action="@Url.Action("ByJob", "EmployerApplications", new { id = job != null ? job.JobID : 0 })"
+          class="application-filter-form">
+
+        <div class="application-filter-input">
+            <i class="fa fa-search"></i>
+            <input type="text"
+                   name="keyword"
+                   value="@keyword"
+                   placeholder="Search skills, experience, education, certificates..." />
+        </div>
+
+        <select name="status">
+            <option value="">All Status</option>
+            <option value="Pending" @(status == "Pending" ? "selected" : "")>Pending</option>
+            <option value="Accepted" @(status == "Accepted" ? "selected" : "")>Accepted</option>
+            <option value="Rejected" @(status == "Rejected" ? "selected" : "")>Rejected</option>
+        </select>
+
+        <select name="matchLevel">
+            <option value="">All Match Levels</option>
+            <option value="Excellent Match" @(matchLevel == "Excellent Match" ? "selected" : "")>Excellent Match</option>
+            <option value="Good Match" @(matchLevel == "Good Match" ? "selected" : "")>Good Match</option>
+            <option value="Need Review" @(matchLevel == "Need Review" ? "selected" : "")>Need Review</option>
+            <option value="Low Match" @(matchLevel == "Low Match" ? "selected" : "")>Low Match</option>
+        </select>
+
+        <select name="sort">
+            <option value="BestMatch" @(sort == "BestMatch" ? "selected" : "")>Best Match</option>
+            <option value="Newest" @(sort == "Newest" ? "selected" : "")>Newest Application</option>
+            <option value="Oldest" @(sort == "Oldest" ? "selected" : "")>Oldest Application</option>
+            <option value="Pending" @(sort == "Pending" ? "selected" : "")>Pending First</option>
+            <option value="Accepted" @(sort == "Accepted" ? "selected" : "")>Accepted First</option>
+            <option value="Rejected" @(sort == "Rejected" ? "selected" : "")>Rejected First</option>
+        </select>
+
+        <button type="submit">
+            Filter
+        </button>
+
+        @if (job != null)
+        {
+            <a href="@Url.Action("ByJob", "EmployerApplications", new { id = job.JobID })">
+                Clear
+            </a>
+        }
+    </form>
+
+    <div class="application-sort-note">
+        <i class="fa fa-lightbulb-o"></i>
+        Candidates are automatically prioritized by match score. The score is only a recommendation to help employers review CVs faster.
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="application-list">
+
+            @foreach (var item in Model)
+            {
+                CvMatchResult ai = null;
+
+                if (aiScores != null && aiScores.ContainsKey(item.ApplicationID))
+                {
+                    ai = aiScores[item.ApplicationID];
+                }
+
+                int score = ai != null ? ai.Score : 0;
+                string level = ai != null ? ai.Level : "Not Analyzed";
+                string message = ai != null ? ai.Message : "The system does not have enough data to evaluate this CV yet.";
+
+                <div class="application-card application-card-advanced">
+
+                    <div class="application-match-column">
+                        <div class="match-score-circle">
+                            <span>@score%</span>
+                        </div>
+
+                        <div class="match-level-label">
+                            @level
+                        </div>
+
+                        <div class="match-progress">
+                            <div style="width:@score%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="application-avatar">
+                        @(item.Candidate != null && !string.IsNullOrEmpty(item.Candidate.FullName)
+                            ? item.Candidate.FullName.Substring(0, 1)
+                            : "U")
+                    </div>
+
+                    <div class="application-info">
+
+                        <div class="application-title-row">
+                            <h3>
+                                @(item.Candidate != null && !string.IsNullOrEmpty(item.Candidate.FullName)
+                                    ? item.Candidate.FullName
+                                    : "Candidate")
+                            </h3>
+
+                            <span class="application-status status-@item.Status.ToLower()">
+                                @item.Status
+                            </span>
+                        </div>
+
+                        <p>
+                            <i class="fa fa-phone"></i>
+                            @(item.Candidate != null && !string.IsNullOrEmpty(item.Candidate.Phone)
+                                ? item.Candidate.Phone
+                                : "Not updated")
+                        </p>
+
+                        <p>
+                            <i class="fa fa-map-marker"></i>
+                            @(item.Candidate != null && !string.IsNullOrEmpty(item.Candidate.Address)
+                                ? item.Candidate.Address
+                                : "Address not updated")
+                        </p>
+
+                        <p>
+                            <i class="fa fa-calendar"></i>
+                            Submitted Date:
+                            @(item.AppliedDate.HasValue ? item.AppliedDate.Value.ToString("dd/MM/yyyy HH:mm") : "Unknown")
+                        </p>
+
+                        <div class="application-match-box">
+                            <p class="match-message">
+                                <strong>System Recommendation:</strong>
+                                @message
+                            </p>
+
+                            @if (ai != null && ai.MatchedSkills != null && ai.MatchedSkills.Any())
+                            {
+                                <div class="matched-skills">
+                                    <strong>Matched Keywords:</strong>
+
+                                    @foreach (var skill in ai.MatchedSkills)
+                                    {
+                                        <span>@skill</span>
+                                    }
+                                </div>
+                            }
+
+                            @if (ai != null && ai.MissingSkills != null && ai.MissingSkills.Any())
+                            {
+                                <div class="missing-skills">
+                                    <strong>Missing Keywords:</strong>
+
+                                    @foreach (var skill in ai.MissingSkills)
+                                    {
+                                        <span>@skill</span>
+                                    }
+                                </div>
+                            }
+
+                            @if (item.Candidate != null && !string.IsNullOrEmpty(item.Candidate.Skills))
+                            {
+                                <div class="candidate-skill-box">
+                                    <strong>Candidate Profile Skills:</strong>
+                                    @item.Candidate.Skills
+                                </div>
+                            }
+
+                            @if (item.Candidate != null && !string.IsNullOrEmpty(item.Candidate.Experience))
+                            {
+                                <div class="candidate-skill-box">
+                                    <strong>Candidate Experience:</strong>
+                                    @item.Candidate.Experience
+                                </div>
+                            }
+
+                            @if (item.Candidate != null && !string.IsNullOrEmpty(item.Candidate.Education))
+                            {
+                                <div class="candidate-skill-box">
+                                    <strong>Candidate Education:</strong>
+                                    @item.Candidate.Education
+                                </div>
+                            }
+                        </div>
+
+                    </div>
+
+                    <div class="application-actions">
+
+                        @if (item.CV != null && !string.IsNullOrEmpty(item.CV.FilePath))
+                        {
+                            <a href="@Url.Content(item.CV.FilePath)" target="_blank" class="btn-view-cv">
+                                <i class="fa fa-eye"></i> View CV
+                            </a>
+
+                            <a href="@Url.Content(item.CV.FilePath)" download class="btn-edit-job">
+                                <i class="fa fa-download"></i> Download CV
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="btn-view-cv disabled-cv-btn">
+                                No CV
+                            </span>
+                        }
+
+                        @if (item.Status != "Accepted")
+                        {
+                            <a href="@Url.Action("Accept", "EmployerApplications", new { id = item.ApplicationID })" class="btn-accept">
+                                Accept
+                            </a>
+                        }
+
+                        @if (item.Status != "Rejected")
+                        {
+                            <a href="@Url.Action("Reject", "EmployerApplications", new { id = item.ApplicationID })" class="btn-delete-job">
+                                Reject
+                            </a>
+                        }
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+    else
+    {
+        <div class="employer-empty">
+            <h3>No matching applications found</h3>
+            <p>Try changing the keyword, status, match level, or sort option.</p>
+        </div>
+    }
+
+</div>

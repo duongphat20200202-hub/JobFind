@@ -1,0 +1,93 @@
+﻿@model BasicProject.Models.Application
+
+@{
+    ViewBag.Title = "CV Submitted Successfully";
+}
+
+<div class="apply-result-page">
+    <div class="container">
+
+        <div class="apply-result-card">
+
+            <div class="result-icon success">
+                <i class="fa fa-check"></i>
+            </div>
+
+            @if (TempData["Success"] != null)
+            {
+                <h1>@TempData["Success"]</h1>
+            }
+            else if (TempData["Error"] != null)
+            {
+                <h1>@TempData["Error"]</h1>
+            }
+            else
+            {
+                <h1>Application Information</h1>
+            }
+
+            <p class="result-subtitle">
+                You can open your submitted CV or delete this application if you want to submit another CV.
+            </p>
+
+            <div class="result-info-table">
+
+                <div class="result-row">
+                    <span>Job</span>
+                    <strong>@Model.Job.Title</strong>
+                </div>
+
+                <div class="result-row">
+                    <span>Company</span>
+                    <strong>@(Model.Job.Company != null ? Model.Job.Company.CompanyName : "Updating")</strong>
+                </div>
+
+                <div class="result-row">
+                    <span>Submitted Date</span>
+                    <strong>
+                        @(Model.AppliedDate.HasValue ? Model.AppliedDate.Value.ToString("dd/MM/yyyy HH:mm") : "Unknown")
+                    </strong>
+                </div>
+
+                <div class="result-row">
+                    <span>Status</span>
+                    <strong class="status-pill">@Model.Status</strong>
+                </div>
+
+                <div class="result-row">
+                    <span>CV File</span>
+
+                    @if (Model.CV != null && !string.IsNullOrEmpty(Model.CV.FilePath))
+                    {
+                        <a href="@Url.Content(Model.CV.FilePath)" target="_blank" class="open-cv-btn">
+                            <i class="fa fa-file-text-o"></i> Open Submitted CV
+                        </a>
+                    }
+                    else
+                    {
+                        <strong>CV file not found</strong>
+                    }
+                </div>
+
+            </div>
+
+            <div class="result-actions">
+
+                <a href="@Url.Action("Details", "Jobs", new { id = Model.JobID })" class="result-btn light">
+                    Back to Job
+                </a>
+
+                <a href="@Url.Action("MyApplications", "Applications")" class="result-btn primary">
+                    My Applications
+                </a>
+
+                <a href="@Url.Action("Delete", "Applications", new { id = Model.ApplicationID })" class="result-btn danger">
+                    Delete Application
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>

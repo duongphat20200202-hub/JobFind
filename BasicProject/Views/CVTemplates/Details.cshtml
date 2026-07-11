@@ -1,0 +1,141 @@
+﻿@model BasicProject.Models.CVTemplate
+
+@{
+    ViewBag.Title = Model.TemplateName;
+
+    var relatedTemplates = ViewBag.RelatedTemplates as List<BasicProject.Models.CVTemplate>;
+}
+
+<div class="cv-detail-page">
+
+    <div class="container">
+
+        <div class="cv-detail-layout">
+
+            <div class="cv-detail-preview-card">
+
+                @if (!string.IsNullOrEmpty(Model.PreviewImage))
+                {
+                    <img src="@Url.Content(Model.PreviewImage)" alt="@Model.TemplateName" />
+                }
+                else
+                {
+                    <div class="cv-template-placeholder large">
+                        <i class="fa fa-file-text-o"></i>
+                        <p>No preview image available.</p>
+                    </div>
+                }
+
+            </div>
+
+            <div class="cv-detail-info">
+
+                <a href="@Url.Action("Index", "CVTemplates")" class="article-back">
+                    <i class="fa fa-angle-left"></i> Back to CV Templates
+                </a>
+
+                <span class="cv-detail-category">
+                    @Model.Category
+                </span>
+
+                <h1>@Model.TemplateName</h1>
+
+                <p>
+                    @(string.IsNullOrEmpty(Model.Description)
+                        ? "This CV template helps candidates create a completed CV by filling in their personal information online."
+                        : Model.Description)
+                </p>
+
+                <div class="cv-feature-list">
+                    <p><i class="fa fa-check"></i> Fill in CV information online</p>
+                    <p><i class="fa fa-check"></i> Generate CV from Word template</p>
+                    <p><i class="fa fa-check"></i> Suitable for many job positions</p>
+                    <p><i class="fa fa-check"></i> Download completed CV as a .docx file</p>
+                </div>
+
+                <div class="cv-detail-actions">
+                    @if (!string.IsNullOrEmpty(Model.PreviewImage))
+                    {
+                        <a href="@Url.Content(Model.PreviewImage)" target="_blank" class="cv-preview-btn">
+                            <i class="fa fa-eye"></i> Open Preview
+                        </a>
+                    }
+
+                    <a href="@Url.Action("Download", "CVTemplates", new { id = Model.TemplateID })"
+                       class="cv-download-btn">
+                        <i class="fa fa-download"></i> Download Template
+                    </a>
+                </div>
+
+                <p class="cv-note">
+                    Download the Word CV template, open it with Microsoft Word, and edit it with your personal information.
+                </p>
+
+            </div>
+
+        </div>
+
+        @if (relatedTemplates != null && relatedTemplates.Any())
+        {
+            <div class="cv-section-title">
+                <div>
+                    <h2>Related CV Templates</h2>
+                    <p>More templates in the same category.</p>
+                </div>
+            </div>
+
+            <div class="cv-template-grid">
+
+                @foreach (var item in relatedTemplates)
+                {
+                    <div class="cv-template-card">
+
+                        <a href="@Url.Action("Details", "CVTemplates", new { id = item.TemplateID })"
+                           class="cv-template-image">
+
+                            @if (!string.IsNullOrEmpty(item.PreviewImage))
+                            {
+                                <img src="@Url.Content(item.PreviewImage)" alt="@item.TemplateName" />
+                            }
+                            else
+                            {
+                                <div class="cv-template-placeholder">
+                                    <i class="fa fa-file-text-o"></i>
+                                </div>
+                            }
+
+                        </a>
+
+                        <div class="cv-template-info">
+                            <span>@item.Category</span>
+
+                            <h3>@item.TemplateName</h3>
+
+                            <p>
+                                @(string.IsNullOrEmpty(item.Description)
+                                    ? "A clean, editable CV template suitable for job candidates."
+                                    : item.Description)
+                            </p>
+
+                            <div class="cv-template-actions">
+                                <a href="@Url.Action("Details", "CVTemplates", new { id = item.TemplateID })"
+                                   class="cv-preview-btn">
+                                    Preview
+                                </a>
+
+                                <a href="@Url.Action("Download", "CVTemplates", new { id = item.TemplateID })"
+                                   class="cv-download-btn">
+                                    Download
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+        }
+
+    </div>
+
+</div>

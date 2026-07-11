@@ -1,0 +1,114 @@
+﻿@model IEnumerable<BasicProject.Models.Application>
+
+@{
+    ViewBag.Title = "My Applications";
+}
+
+<div class="my-applications-page">
+    <div class="container">
+
+        <div class="my-applications-head">
+            <h1>My Applications</h1>
+            <p>Track the jobs you have applied for.</p>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="application-list">
+
+                @foreach (var item in Model)
+                {
+                    <div class="app-card">
+
+                        <!-- LEFT: Logo -->
+                        <div class="app-logo">
+                            @if (item.Job.Company != null && !string.IsNullOrEmpty(item.Job.Company.Logo))
+                            {
+                                <img src="@Url.Content(item.Job.Company.Logo)" />
+                            }
+                            else
+                            {
+                                <i class="fa fa-building"></i>
+                            }
+                        </div>
+
+                        <!-- CENTER: Job Info -->
+                        <div class="app-info">
+                            <h3>@item.Job.Title</h3>
+                            <div class="app-company">
+                                @(item.Job.Company != null ? item.Job.Company.CompanyName : "Updating")
+                            </div>
+
+                            <div class="app-meta">
+                                <span><i class="fa fa-map-marker"></i> @item.Job.Location</span>
+                                <span>
+                                    <i class="fa fa-calendar"></i>
+                                    @(item.AppliedDate?.ToString("dd/MM/yyyy") ?? "Unknown")
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- RIGHT BOX 1 -->
+                        <div class="app-box">
+                            <strong>
+                                @(item.AppliedDate?.ToString("dd/MM/yyyy HH:mm") ?? "-")
+                            </strong>
+                        </div>
+
+                        <!-- RIGHT BOX 2 -->
+                        <div class="app-box">
+
+                            @if (item.Status == "Accepted")
+                            {
+                                <span class="st-accepted">Accepted</span>
+                            }
+                            else if (item.Status == "Rejected")
+                            {
+                                <span class="st-rejected">Rejected</span>
+                            }
+                            else
+                            {
+                                <span class="st-pending">Pending</span>
+                            }
+                        </div>
+
+                        <!-- ACTIONS -->
+                        <div class="app-actions">
+
+                            @if (item.CV != null && !string.IsNullOrEmpty(item.CV.FilePath))
+                            {
+                                <a href="@Url.Content(item.CV.FilePath)" target="_blank">
+                                    <i class="fa fa-file"></i> CV
+                                </a>
+                            }
+
+                            <a href="@Url.Action("Details","Jobs", new { id = item.JobID })">
+                                <i class="fa fa-eye"></i> View
+                            </a>
+
+                            @if (item.Status == "Pending")
+                            {
+                                <a class="danger"
+                                   href="@Url.Action("Delete","Applications", new { id = item.ApplicationID })">
+                                    <i class="fa fa-trash"></i> Delete
+                                </a>
+                            }
+
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="empty-box">
+                <h3>No Applications Yet</h3>
+                <p>Apply for jobs to see them here</p>
+                <a href="@Url.Action("Index","Jobs")">Find Jobs</a>
+            </div>
+        }
+
+    </div>
+</div>

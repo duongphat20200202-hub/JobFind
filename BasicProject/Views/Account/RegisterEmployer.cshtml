@@ -1,0 +1,128 @@
+﻿@{
+    ViewBag.Title = "Employer Registration";
+    Layout = "~/Views/Shared/_EmployerPublicLayout.cshtml";
+}
+
+<div class="auth-register-page">
+
+    <div class="register-card employer-card">
+
+        <div class="register-header">
+            <div class="register-icon employer">
+                <i class="fa fa-building"></i>
+            </div>
+
+            <div>
+                <h1>Employer Registration</h1>
+                <p>Create a company account to post jobs and reach suitable candidates.</p>
+            </div>
+        </div>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="auth-alert">
+                @ViewBag.Error
+            </div>
+        }
+
+        <form method="post" action="@Url.Action("RegisterEmployer", "Account")" class="register-form">
+
+            <div class="form-section-title">
+                <h2>Account Information</h2>
+            </div>
+
+            <div class="form-grid">
+                <div class="auth-field">
+                    <label>Username</label>
+                    <input type="text" name="userName" placeholder="Example: companyhr" />
+                </div>
+
+                <div class="auth-field">
+                    <label>Login Email</label>
+                    <input type="email" name="email" placeholder="Enter login email" />
+                </div>
+
+                <div class="auth-field">
+                    <label>Password</label>
+                    <input type="password" name="password" placeholder="Enter password" />
+                </div>
+
+                <div class="auth-field">
+                    <label>Confirm Password</label>
+                    <input type="password" name="confirmPassword" placeholder="Confirm password" />
+                </div>
+            </div>
+
+            <div class="form-section-title">
+                <h2>Representative Information</h2>
+            </div>
+
+            <div class="form-grid">
+                <div class="auth-field">
+                    <label>Full Name</label>
+                    <input type="text" name="fullName" placeholder="Enter representative full name" />
+                </div>
+
+                <div class="auth-field">
+                    <label>Phone Number</label>
+                    <input type="text" name="phone" placeholder="Enter phone number" />
+                </div>
+
+                <div class="auth-field full">
+                    <label>Position</label>
+                    <input type="text" name="position" placeholder="Example: HR Manager" />
+                </div>
+            </div>
+
+            <div class="form-section-title">
+                <h2>Company Information</h2>
+            </div>
+
+            <div class="form-grid">
+                <div class="auth-field">
+                    <label>Company Name</label>
+                    <input type="text" name="companyName" placeholder="Enter company name" />
+                </div>
+
+                <div class="auth-field">
+                    <label>Company Location</label>
+                    <input type="text" name="location" placeholder="Example: Ha Noi" />
+                </div>
+
+                <div class="auth-field">
+                    <label>Company Email</label>
+                    <input type="email" name="companyEmail" placeholder="Company email" />
+                </div>
+
+                <div class="auth-field">
+                    <label>Company Phone Number</label>
+                    <input type="text" name="companyPhone" placeholder="Company phone number" />
+                </div>
+
+                <div class="auth-field full">
+                    <label>Website</label>
+                    <input type="text" name="website" placeholder="https://..." />
+                </div>
+
+                <div class="auth-field full">
+                    <label>Company Description</label>
+                    <textarea name="description" placeholder="Short introduction about your company"></textarea>
+                </div>
+            </div>
+
+            <button type="submit" class="register-submit employer">
+                Register as Employer
+            </button>
+
+        </form>
+
+        <div class="register-bottom">
+            <span>Already have an account?</span>
+            <a href="@Url.Action("Login", "Account", new { role = "Employer" })">
+                Login
+            </a>
+        </div>
+
+    </div>
+
+</div>

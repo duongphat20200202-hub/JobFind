@@ -1,0 +1,188 @@
+﻿@{
+    ViewBag.Title = "Employer Dashboard";
+    Layout = "~/Views/Shared/_EmployerLayout.cshtml";
+
+    string userName = Session["UserName"] != null
+        ? Session["UserName"].ToString()
+        : "Employer";
+}
+
+<div class="employer-dashboard-page">
+
+    <!-- HERO -->
+    <section class="emp-dashboard-hero">
+
+        <div class="emp-hero-left">
+            <span class="emp-hero-badge">
+                <i class="fa fa-briefcase"></i> Employer Center
+            </span>
+
+            <h1>Welcome back, @userName</h1>
+
+            <p>
+                Manage your company profile, post recruitment jobs,
+                and review candidate applications in one place.
+            </p>
+
+            <div class="emp-hero-actions">
+                <a href="@Url.Action("Create", "EmployerJobs")" class="emp-primary-btn">
+                    <i class="fa fa-plus-circle"></i> Post a Job
+                </a>
+
+                <a href="@Url.Action("Index", "EmployerApplications")" class="emp-secondary-btn">
+                    <i class="fa fa-file-text"></i> View Applications
+                </a>
+            </div>
+        </div>
+
+        <div class="emp-hero-right">
+            <div class="emp-company-status-card">
+                <div class="emp-status-icon">
+                    <i class="fa fa-check"></i>
+                </div>
+
+                <h3>Company Approved</h3>
+
+                <p>
+                    Your company profile is active and visible to candidates.
+                </p>
+
+                <a href="@Url.Action("Edit", "EmployerCompany")">
+                    Update Company Profile
+                </a>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- STATS -->
+    <section class="emp-stats-grid">
+
+        <div class="emp-stat-card">
+            <div class="emp-stat-icon blue">
+                <i class="fa fa-briefcase"></i>
+            </div>
+
+            <div class="emp-stat-content">
+                <h3>Total Job Posts</h3>
+                <strong>@ViewBag.TotalJobs</strong>
+                <p>Total number of job posts from your company</p>
+            </div>
+        </div>
+
+        <div class="emp-stat-card">
+            <div class="emp-stat-icon orange">
+                <i class="fa fa-clock-o"></i>
+            </div>
+
+            <div class="emp-stat-content">
+                <h3>Pending Jobs</h3>
+                <strong>@ViewBag.PendingJobs</strong>
+                <p>Job posts waiting for admin review</p>
+            </div>
+        </div>
+
+        <div class="emp-stat-card">
+            <div class="emp-stat-icon green">
+                <i class="fa fa-check-circle"></i>
+            </div>
+
+            <div class="emp-stat-content">
+                <h3>Approved Jobs</h3>
+                <strong>@ViewBag.ApprovedJobs</strong>
+                <p>Job posts currently visible to candidates</p>
+            </div>
+        </div>
+
+        <div class="emp-stat-card">
+            <div class="emp-stat-icon red">
+                <i class="fa fa-times-circle"></i>
+            </div>
+
+            <div class="emp-stat-content">
+                <h3>Rejected Jobs</h3>
+                <strong>@ViewBag.RejectedJobs</strong>
+                <p>Job posts rejected by admin</p>
+            </div>
+        </div>
+
+        <div class="emp-stat-card">
+            <div class="emp-stat-icon gray">
+                <i class="fa fa-lock"></i>
+            </div>
+
+            <div class="emp-stat-content">
+                <h3>Closed Jobs</h3>
+                <strong>@ViewBag.ClosedJobs</strong>
+                <p>Job posts that have been closed</p>
+            </div>
+        </div>
+
+        <div class="emp-stat-card">
+            <div class="emp-stat-icon purple">
+                <i class="fa fa-users"></i>
+            </div>
+
+            <div class="emp-stat-content">
+                <h3>Applications</h3>
+                <strong>@ViewBag.TotalApplications</strong>
+                <p>Total candidate applications submitted</p>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- QUICK ACTIONS + TIP -->
+    <section class="emp-dashboard-bottom">
+
+        <div class="emp-quick-actions-box">
+            <div class="emp-section-head">
+                <h2>Quick Actions</h2>
+                <p>Frequently used employer tools</p>
+            </div>
+
+            <div class="emp-quick-actions-grid">
+
+                <a href="@Url.Action("Edit", "EmployerCompany")" class="emp-action-card">
+                    <i class="fa fa-building"></i>
+                    <span>Company Profile</span>
+                </a>
+
+                <a href="@Url.Action("Create", "EmployerJobs")" class="emp-action-card">
+                    <i class="fa fa-plus-circle"></i>
+                    <span>Post New Job</span>
+                </a>
+
+                <a href="@Url.Action("Index", "EmployerJobs")" class="emp-action-card">
+                    <i class="fa fa-list"></i>
+                    <span>Manage Jobs</span>
+                </a>
+
+                <a href="@Url.Action("Index", "EmployerApplications")" class="emp-action-card">
+                    <i class="fa fa-file-text"></i>
+                    <span>Review Candidates</span>
+                </a>
+
+            </div>
+        </div>
+
+        <div class="emp-tip-box">
+            <div class="emp-tip-icon">
+                <i class="fa fa-lightbulb-o"></i>
+            </div>
+
+            <h2>Hiring Tip</h2>
+
+            <p>
+                Job posts with clear salary, location, requirements, and benefits
+                usually receive more candidate applications.
+            </p>
+
+            <a href="@Url.Action("Create", "EmployerJobs")">
+                Improve your next job post
+            </a>
+        </div>
+
+    </section>
+
+</div>

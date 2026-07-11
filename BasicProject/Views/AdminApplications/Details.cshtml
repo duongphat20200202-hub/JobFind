@@ -1,0 +1,101 @@
+﻿@model BasicProject.Models.Application
+
+@{
+    ViewBag.Title = "Application Details";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="admin-page-head">
+    <div>
+        <h1>Application Details</h1>
+    </div>
+
+    <a href="@Url.Action("Index", "AdminApplications")" class="admin-back-btn">
+        <i class="fa fa-arrow-left"></i>
+        Back
+    </a>
+</div>
+
+<div class="admin-application-detail-card">
+
+    <div class="admin-application-detail-head">
+
+        <div class="admin-application-avatar">
+            <i class="fa fa-user"></i>
+        </div>
+
+        <div>
+            <h2>
+                @(Model.Candidate != null ? Model.Candidate.FullName : "Unknown Candidate")
+            </h2>
+
+            <p>
+                Applied for:
+                <strong>@(Model.Job != null ? Model.Job.Title : "Unknown Job")</strong>
+            </p>
+        </div>
+
+    </div>
+
+    <div class="admin-detail-grid">
+
+        <div class="admin-detail-item">
+            <label>Candidate Name</label>
+            <p>@(Model.Candidate != null ? Model.Candidate.FullName : "Unknown Candidate")</p>
+        </div>
+
+        <div class="admin-detail-item">
+            <label>Candidate Phone</label>
+            <p>@(Model.Candidate != null && !string.IsNullOrEmpty(Model.Candidate.Phone) ? Model.Candidate.Phone : "Not available")</p>
+        </div>
+
+        <div class="admin-detail-item">
+            <label>Job Title</label>
+            <p>@(Model.Job != null ? Model.Job.Title : "Unknown Job")</p>
+        </div>
+
+        <div class="admin-detail-item">
+            <label>Company</label>
+            <p>@(Model.Job != null && Model.Job.Company != null ? Model.Job.Company.CompanyName : "Updating")</p>
+        </div>
+
+        <div class="admin-detail-item">
+            <label>Category</label>
+            <p>@(Model.Job != null && Model.Job.Category != null ? Model.Job.Category.CategoryName : "Uncategorized")</p>
+        </div>
+
+        <div class="admin-detail-item">
+            <label>Applied Date</label>
+            <p>@(Model.AppliedDate.HasValue ? Model.AppliedDate.Value.ToString("dd/MM/yyyy HH:mm") : "Not available")</p>
+        </div>
+
+        <div class="admin-detail-item">
+            <label>Status</label>
+            <p>@Model.Status</p>
+        </div>
+
+        <div class="admin-detail-item">
+            <label>CV File</label>
+
+            @if (Model.CV != null && !string.IsNullOrEmpty(Model.CV.FilePath))
+            {
+                <p>
+                    <a href="@Url.Content(Model.CV.FilePath)" target="_blank" class="admin-view-btn">
+                        Open Candidate CV
+                    </a>
+                </p>
+            }
+            else
+            {
+                <p>No CV file available</p>
+            }
+        </div>
+
+        <div class="admin-detail-item full">
+            <label>Cover Letter</label>
+            <p>@(string.IsNullOrEmpty(Model.CoverLetter) ? "No cover letter" : Model.CoverLetter)</p>
+        </div>
+
+    </div>
+
+</div>

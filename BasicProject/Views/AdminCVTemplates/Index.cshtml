@@ -1,0 +1,172 @@
+﻿@model IEnumerable<BasicProject.Models.CVTemplate>
+
+@{
+    ViewBag.Title = "Manage CV Templates";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@section styles {
+    <link rel="stylesheet" href="@Url.Content("~/Content/AdminCVTemplates.css?v=1001")" />
+}
+
+<div class="admin-cv-page">
+
+    <div class="admin-cv-top-row">
+        <a href="@Url.Action("Create", "AdminCVTemplates")" class="admin-cv-add-btn">
+            <i class="fa fa-plus"></i>
+            Add CV Template
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="auth-success">
+            @TempData["Success"]
+        </div>
+    }
+
+    <div class="admin-cv-list">
+
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <div class="admin-cv-card">
+
+                    <div class="admin-cv-preview">
+                        @if (!string.IsNullOrEmpty(item.PreviewImage))
+                        {
+                            <a href="@Url.Content(item.PreviewImage)" target="_blank">
+                                <img src="@Url.Content(item.PreviewImage)" alt="@item.TemplateName" />
+                            </a>
+                        }
+                        else
+                        {
+                            <div class="admin-cv-no-image">
+                                <i class="fa fa-image"></i>
+                                <span>No Image</span>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="admin-cv-main">
+
+                        <div class="admin-cv-title-row">
+                            <div>
+                                <h3>@item.TemplateName</h3>
+
+                                <div class="admin-cv-meta">
+                                    <span>
+                                        <i class="fa fa-layer-group"></i>
+                                        @(string.IsNullOrEmpty(item.Category) ? "Uncategorized" : item.Category)
+                                    </span>
+
+                                    <span>
+                                        <i class="fa fa-calendar"></i>
+                                        @item.CreatedAt.ToString("dd/MM/yyyy")
+                                    </span>
+                                </div>
+                            </div>
+
+                            @if (item.IsActive)
+                            {
+                                <span class="admin-cv-status visible">
+                                    <i class="fa fa-check-circle"></i>
+                                    Visible
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="admin-cv-status hidden">
+                                    <i class="fa fa-eye-slash"></i>
+                                    Hidden
+                                </span>
+                            }
+                        </div>
+
+                        <div class="admin-cv-file-row">
+
+                            <div class="admin-cv-file-box">
+                                <div class="admin-cv-file-icon image">
+                                    <i class="fa fa-image"></i>
+                                </div>
+
+                                <div>
+                                    <strong>Preview Image</strong>
+
+                                    @if (!string.IsNullOrEmpty(item.PreviewImage))
+                                    {
+                                        <p>Image uploaded successfully</p>
+
+                                        <a href="@Url.Content(item.PreviewImage)" target="_blank">
+                                            View image
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <p>No preview image uploaded</p>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="admin-cv-file-box">
+                                <div class="admin-cv-file-icon word">
+                                    <i class="fa fa-file-word"></i>
+                                </div>
+
+                                <div>
+                                    <strong>Word Template</strong>
+
+                                    @if (!string.IsNullOrEmpty(item.FilePath))
+                                    {
+                                        <p>DOCX file uploaded successfully</p>
+
+                                        <a href="@Url.Content(item.FilePath)" target="_blank">
+                                            Open Word file
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <p>No Word file uploaded</p>
+                                    }
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="admin-cv-actions">
+                        <a href="@Url.Action("Edit", "AdminCVTemplates", new { id = item.TemplateID })"
+                           class="admin-cv-edit-btn">
+                            <i class="fa fa-pen"></i>
+                            Edit
+                        </a>
+
+                        <form method="post"
+                              action="@Url.Action("Delete", "AdminCVTemplates", new { id = item.TemplateID })"
+                              onsubmit="return confirm('Are you sure you want to delete this CV template?');">
+
+                            <button type="submit" class="admin-cv-delete-btn">
+                                <i class="fa fa-trash"></i>
+                                Delete
+                            </button>
+
+                        </form>
+                    </div>
+
+                </div>
+            }
+        }
+        else
+        {
+            <div class="admin-empty-box">
+                <i class="fa fa-file-lines"></i>
+                <h3>No CV templates yet</h3>
+                <p>Add your first CV template to display it on the candidate CV Templates page.</p>
+            </div>
+        }
+
+    </div>
+
+</div>

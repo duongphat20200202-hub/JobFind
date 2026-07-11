@@ -1,0 +1,209 @@
+﻿@{
+    ViewBag.Title = "Apply for Job";
+    var job = ViewBag.Job as BasicProject.Models.Job;
+}
+
+<div class="apply-modal-page">
+
+    <div class="apply-modal-overlay"></div>
+
+    <div class="apply-modal-box">
+
+        <div class="apply-modal-header">
+            <h1>
+                Apply for
+                @if (job != null)
+                {
+                    <span>@job.Title</span>
+                }
+            </h1>
+
+            <a href="@(job != null ? Url.Action("Details", "Jobs", new { id = job.JobID }) : Url.Action("Index", "Jobs"))"
+               class="apply-modal-close">
+                <i class="fa fa-times"></i>
+            </a>
+        </div>
+
+        <div class="apply-modal-body">
+
+            @if (job != null)
+            {
+                <div class="apply-job-summary">
+                    <h2>@job.Title</h2>
+                    <p>@(job.Company != null ? job.Company.CompanyName : "Updating")</p>
+
+                    <div>
+                        <span>
+                            <i class="fa fa-map-marker"></i>
+                            @(string.IsNullOrEmpty(job.Location) ? "Updating" : job.Location)
+                        </span>
+
+                        <span>
+                            <i class="fa fa-money"></i>
+                            @(job.Salary.HasValue ? job.Salary.Value.ToString("N0") + " USD" : "Negotiable")
+                        </span>
+                    </div>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="apply-alert error">
+                    @TempData["Error"]
+                </div>
+            }
+
+            <form action="@Url.Action("Apply", "Applications")"
+                  method="post"
+                  enctype="multipart/form-data"
+                  id="applyCvForm">
+
+                <input type="hidden" name="jobId" value="@(job != null ? job.JobID : 0)" />
+
+                <div class="apply-form-section">
+
+                    <label class="apply-label">
+                        Resume / CV<span>*</span>
+                    </label>
+
+                    <div class="cv-source-box">
+
+                        <button type="button" class="cv-source-btn active" onclick="toggleJobFindCvBox()">
+                            <span>From JobFind</span>
+                            <i class="fa fa-angle-down"></i>
+                        </button>
+
+                        <div class="jobfind-cv-dropdown" id="jobfindCvDropdown">
+                            <p>You do not have a resume on JobFind yet.</p>
+
+                            <a href="@Url.Action("Index", "CVTemplates")">
+                                <i class="fa fa-plus"></i>
+                                Create a new resume
+                            </a>
+                        </div>
+
+                        <label for="cvFile" class="cv-upload-btn">
+                            <i class="fa fa-upload"></i>
+                            From Computer
+                        </label>
+
+                        <input type="file"
+                               id="cvFile"
+                               name="cvFile"
+                               accept=".pdf,.doc,.docx"
+                               hidden
+                               required />
+
+                    </div>
+
+                    <div class="cv-file-note">
+                        File: DOC, DOCX, PDF. Recommended file size is under 3MB.
+                    </div>
+
+                    <div class="cv-selected-file" id="cvSelectedFile" style="display:none;">
+                        <div class="cv-file-icon">
+                            <i class="fa fa-file-text-o"></i>
+                        </div>
+
+                        <div class="cv-file-info">
+                            <strong id="cvFileName">CV file name</strong>
+                            <span id="cvFileMeta">File format</span>
+                        </div>
+
+                        <button type="button" class="cv-remove-file" onclick="removeSelectedCV()">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+
+                </div>
+
+                <div class="apply-form-section">
+                    <label class="apply-label">
+                        Phone Number<span>*</span>
+                    </label>
+
+                    <div class="phone-input-wrap">
+                        <i class="fa fa-phone"></i>
+                        <input type="text"
+                               name="phone"
+                               placeholder="Enter your phone number"
+                               required />
+                    </div>
+
+                    <p class="apply-help-text">
+                        Employers may contact you through this phone number.
+                    </p>
+                </div>
+
+                <button type="submit" class="careerlink-apply-submit">
+                    Apply Now
+                </button>
+
+            </form>
+
+        </div>
+
+        <div class="apply-modal-footer">
+            Please check your CV carefully before submitting. The employer will see the CV you submit for this job.
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    const cvInput = document.getElementById("cvFile");
+    const cvSelectedFile = document.getElementById("cvSelectedFile");
+    const cvFileName = document.getElementById("cvFileName");
+    const cvFileMeta = document.getElementById("cvFileMeta");
+
+    function toggleJobFindCvBox() {
+        const box = document.getElementById("jobfindCvDropdown");
+        if (box) {
+            box.classList.toggle("show");
+        }
+    }
+
+    cvInput.addEventListener("change", function () {
+        if (this.files && this.files.length > 0) {
+            const file = this.files[0];
+
+            const fileName = file.name;
+            const fileSize = formatFileSize(file.size);
+            const fileType = getFileExtension(fileName);
+
+            cvFileName.innerText = fileName;
+            cvFileMeta.innerText = "Format: " + fileType.toUpperCase() + " • Size: " + fileSize;
+
+            cvSelectedFile.style.display = "flex";
+        }
+    });
+
+    function removeSelectedCV() {
+        cvInput.value = "";
+        cvSelectedFile.style.display = "none";
+        cvFileName.innerText = "";
+        cvFileMeta.innerText = "";
+    }
+
+    function getFileExtension(fileName) {
+        const parts = fileName.split(".");
+        if (parts.length <= 1) {
+            return "Unknown";
+        }
+
+        return parts.pop();
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes < 1024) {
+            return bytes + " B";
+        }
+
+        if (bytes < 1024 * 1024) {
+            return (bytes / 1024).toFixed(1) + " KB";
+        }
+
+        return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+    }
+</script>

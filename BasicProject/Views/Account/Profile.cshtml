@@ -1,0 +1,235 @@
+﻿@{
+    ViewBag.Title = "My Profile";
+
+    if (Session["Role"] != null && Session["Role"].ToString() == "Employer")
+    {
+        Layout = "~/Views/Shared/_EmployerLayout.cshtml";
+    }
+    else if (Session["Role"] != null && Session["Role"].ToString() == "Admin")
+    {
+        Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+
+    string userName = Session["UserName"] != null ? Session["UserName"].ToString() : "";
+    string email = Session["Email"] != null ? Session["Email"].ToString() : "";
+    string role = Session["Role"] != null ? Session["Role"].ToString() : "";
+
+    string backController = "Home";
+    string backAction = "Index";
+    string backText = "Back to Homepage";
+    string backIcon = "fa-home";
+
+    if (role == "Employer")
+    {
+        backController = "EmployerDashboard";
+        backAction = "Index";
+        backText = "Back to Employer Dashboard";
+        backIcon = "fa-dashboard";
+    }
+    else if (role == "Admin")
+    {
+        backController = "AdminDashboard";
+        backAction = "Index";
+        backText = "Back to Admin Dashboard";
+        backIcon = "fa-dashboard";
+    }
+}
+
+<div class="profile-page">
+
+    <div class="profile-container">
+
+        <div class="profile-header-card">
+            <div class="profile-avatar-large">
+                <i class="fa fa-user"></i>
+            </div>
+
+            <div>
+                <span class="profile-badge">
+                    <i class="fa fa-id-card"></i>
+                    Account Center
+                </span>
+
+                <h1>My Profile</h1>
+
+                <p>
+                    Manage your account information and update your personal details.
+                </p>
+            </div>
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="profile-alert success">
+                <i class="fa fa-check-circle"></i>
+                @TempData["Success"]
+            </div>
+        }
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="profile-alert error">
+                <i class="fa fa-times-circle"></i>
+                @ViewBag.Error
+            </div>
+        }
+
+        <div class="profile-layout">
+
+            <div class="profile-side-card">
+                <div class="profile-side-avatar">
+                    <i class="fa fa-user-circle"></i>
+                </div>
+
+                <h2>@userName</h2>
+
+                <p>@email</p>
+
+                <span class="profile-role-pill">
+                    @role
+                </span>
+
+                <div class="profile-side-links">
+
+                    @if (role == "Candidate")
+                    {
+                        <a href="@Url.Action("Index", "SavedJobs")">
+                            <i class="fa fa-heart"></i>
+                            Saved Jobs
+                        </a>
+
+                        <a href="@Url.Action("MyApplications", "Applications")">
+                            <i class="fa fa-file-text"></i>
+                            My Applications
+                        </a>
+                    }
+
+                    @if (role == "Employer")
+                    {
+                        <a href="@Url.Action("Index", "EmployerDashboard")">
+                            <i class="fa fa-dashboard"></i>
+                            Employer Dashboard
+                        </a>
+
+                        <a href="@Url.Action("Edit", "EmployerCompany")">
+                            <i class="fa fa-building"></i>
+                            Company Profile
+                        </a>
+
+                        <a href="@Url.Action("Index", "EmployerJobs")">
+                            <i class="fa fa-briefcase"></i>
+                            Job Posts
+                        </a>
+
+                        <a href="@Url.Action("Index", "EmployerApplications")">
+                            <i class="fa fa-file-text"></i>
+                            Candidate Applications
+                        </a>
+                    }
+
+                    @if (role == "Admin")
+                    {
+                        <a href="@Url.Action("Index", "AdminDashboard")">
+                            <i class="fa fa-dashboard"></i>
+                            Admin Dashboard
+                        </a>
+                    }
+
+                    <a href="@Url.Action("Logout", "Account")" class="logout-link">
+                        <i class="fa fa-sign-out"></i>
+                        Logout
+                    </a>
+                </div>
+            </div>
+
+            <div class="profile-form-card">
+
+                <div class="profile-form-head">
+                    <h2>Account Information</h2>
+                    <p>Update your basic account details below.</p>
+                </div>
+
+                <form method="post"
+                      action="@Url.Action("Profile", "Account")"
+                      class="profile-form">
+
+                    <div class="profile-form-grid">
+
+                        <div class="profile-field">
+                            <label>Username</label>
+
+                            <div class="profile-input-wrap">
+                                <i class="fa fa-user"></i>
+                                <input type="text"
+                                       name="userName"
+                                       value="@userName"
+                                       autocomplete="username" />
+                            </div>
+                        </div>
+
+                        <div class="profile-field">
+                            <label>Email</label>
+
+                            <div class="profile-input-wrap">
+                                <i class="fa fa-envelope"></i>
+                                <input type="email"
+                                       name="email"
+                                       value="@email"
+                                       autocomplete="email" />
+                            </div>
+                        </div>
+
+                        <div class="profile-field">
+                            <label>Role</label>
+
+                            <div class="profile-input-wrap disabled">
+                                <i class="fa fa-briefcase"></i>
+                                <input type="text"
+                                       value="@role"
+                                       readonly />
+                            </div>
+
+                            <small>Role cannot be changed from this page.</small>
+                        </div>
+
+                        <div class="profile-field">
+                            <label>New Password</label>
+
+                            <div class="profile-input-wrap">
+                                <i class="fa fa-lock"></i>
+                                <input type="password"
+                                       name="newPassword"
+                                       placeholder="Leave blank to keep current password"
+                                       autocomplete="new-password" />
+                            </div>
+
+                            <small>Only enter a password if you want to change it.</small>
+                        </div>
+
+                    </div>
+
+                    <div class="profile-actions">
+                        <button type="submit" class="profile-save-btn">
+                            <i class="fa fa-save"></i>
+                            Save Changes
+                        </button>
+
+                        <a href="@Url.Action(backAction, backController)" class="profile-back-btn">
+                            <i class="fa @backIcon"></i>
+                            @backText
+                        </a>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,141 @@
+﻿@model IEnumerable<BasicProject.Models.SavedJob>
+
+@{
+    ViewBag.Title = "Saved Jobs";
+}
+
+<div class="saved-jobs-page">
+    <div class="container">
+
+        <div class="saved-jobs-head">
+            <h1>Saved Jobs</h1>
+            <p>Jobs you have saved to review and apply for later.</p>
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="saved-alert success">
+                @TempData["Success"]
+            </div>
+        }
+
+        @if (TempData["Info"] != null)
+        {
+            <div class="saved-alert info">
+                @TempData["Info"]
+            </div>
+        }
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="saved-job-list">
+
+                @foreach (var item in Model)
+                {
+                    var job = item.Job;
+                    var company = job != null ? job.Company : null;
+                    var savedDate = String.Format("{0:dd/MM/yyyy}", item.SavedAt);
+
+                    <div class="saved-job-card">
+
+                        <div class="saved-job-logo">
+                            @if (company != null && !string.IsNullOrEmpty(company.Logo))
+                            {
+                                <img src="@Url.Content(company.Logo)" alt="@company.CompanyName" />
+                            }
+                            else
+                            {
+                                <span>
+                                    @(company != null && !string.IsNullOrEmpty(company.CompanyName)
+                                        ? company.CompanyName.Substring(0, 1)
+                                        : "J")
+                                </span>
+                            }
+                        </div>
+
+                        <div class="saved-job-info">
+
+                            <h3>
+                                @(job != null && !string.IsNullOrEmpty(job.Title)
+                                    ? job.Title
+                                    : "Job no longer exists")
+                            </h3>
+
+                            <p>
+                                @(company != null && !string.IsNullOrEmpty(company.CompanyName)
+                                    ? company.CompanyName
+                                    : "Updating")
+                            </p>
+
+                            <div class="saved-job-meta">
+
+                                <span>
+                                    <i class="fa fa-map-marker"></i>
+                                    @(job != null && !string.IsNullOrEmpty(job.Location)
+                                        ? job.Location
+                                        : "Updating")
+                                </span>
+
+                                <span>
+                                    <i class="fa fa-money"></i>
+                                    @(job != null && job.Salary.HasValue
+                                        ? job.Salary.Value.ToString("N0") + " USD"
+                                        : "Negotiable")
+                                </span>
+
+                                <span>
+                                    <i class="fa fa-calendar"></i>
+                                    Saved on: @(string.IsNullOrEmpty(savedDate) ? "Unknown" : savedDate)
+                                </span>
+
+                            </div>
+                        </div>
+
+                        <div class="saved-job-actions">
+
+                            @if (job != null)
+                            {
+                                <a href="@Url.Action("Details", "Jobs", new { id = item.JobID })" class="saved-view-btn">
+                                    View Details
+                                </a>
+
+                                <a href="@Url.Action("Apply", "Applications", new { jobId = item.JobID })" class="saved-apply-btn">
+                                    Apply with CV
+                                </a>
+
+                                <a href="@Url.Action("Unsave", "SavedJobs", new { jobId = item.JobID })"
+                                   class="saved-remove-btn"
+                                   onclick="return confirm('Are you sure you want to remove this job from your saved list?');">
+                                    Remove
+                                </a>
+                            }
+                            else
+                            {
+                                <a href="@Url.Action("Unsave", "SavedJobs", new { jobId = item.JobID })"
+                                   class="saved-remove-btn"
+                                   onclick="return confirm('This job no longer exists. Do you want to remove it from your saved list?');">
+                                    Remove from List
+                                </a>
+                            }
+
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="saved-empty">
+                <h3>You have not saved any jobs yet</h3>
+                <p>When you find a suitable job, click the save button to review it later.</p>
+
+                <a href="@Url.Action("Index", "Jobs")">
+                    Find Jobs
+                </a>
+            </div>
+        }
+
+    </div>
+</div>

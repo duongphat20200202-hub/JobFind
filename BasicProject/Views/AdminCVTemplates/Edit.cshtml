@@ -1,0 +1,174 @@
+﻿@model BasicProject.Models.CVTemplate
+
+@{
+    ViewBag.Title = "Edit CV Template";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@if (ViewBag.Error != null)
+{
+    <div class="auth-error">
+        @ViewBag.Error
+    </div>
+}
+
+<form method="post"
+      action="@Url.Action("Edit", "AdminCVTemplates", new { id = Model.TemplateID })"
+      enctype="multipart/form-data"
+      class="admin-cv-form">
+
+    <div class="form-group">
+        <label>CV Template Name</label>
+        <input type="text" name="templateName" value="@Model.TemplateName" />
+    </div>
+
+    <div class="form-group">
+        <label>Template Category</label>
+        <select name="category">
+            <option value="Professional" @(Model.Category == "Professional" ? "selected" : "")>Professional</option>
+            <option value="Modern" @(Model.Category == "Modern" ? "selected" : "")>Modern</option>
+            <option value="Student" @(Model.Category == "Student" ? "selected" : "")>Student</option>
+            <option value="Simple" @(Model.Category == "Simple" ? "selected" : "")>Simple</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Current Preview Image</label>
+
+        @if (!string.IsNullOrEmpty(Model.PreviewImage))
+        {
+            <div class="admin-current-file-box">
+                <a href="@Url.Content(Model.PreviewImage)" target="_blank">
+                    <img src="@Url.Content(Model.PreviewImage)" class="admin-preview-image" />
+                </a>
+
+                <p>
+                    <strong>Current Image Path:</strong>
+                    @Model.PreviewImage
+                </p>
+
+                <a href="@Url.Content(Model.PreviewImage)" target="_blank" class="admin-file-open-btn">
+                    Open Current Image
+                </a>
+            </div>
+        }
+        else
+        {
+            <p><span class="status-hidden">No preview image yet.</span></p>
+        }
+
+        <input type="file"
+               name="previewFile"
+               id="previewFile"
+               accept="image/*"
+               onchange="showSelectedImage(this)" />
+
+        <small>If you choose a new image, it will replace the old image after saving.</small>
+
+        <div id="selectedImageBox" class="admin-selected-file-box" style="display:none;">
+            <p><strong>New selected image:</strong> <span id="selectedImageName"></span></p>
+            <img id="selectedImagePreview" class="admin-selected-image-preview" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Current Word Template File</label>
+
+        @if (!string.IsNullOrEmpty(Model.FilePath))
+        {
+            <div class="admin-current-file-box">
+                <p>
+                    <span class="status-active">DOCX Uploaded</span>
+                </p>
+
+                <p>
+                    <strong>Current File Path:</strong>
+                    @Model.FilePath
+                </p>
+
+                <a href="@Url.Content(Model.FilePath)" target="_blank" class="admin-file-open-btn">
+                    Open Current Word File
+                </a>
+            </div>
+        }
+        else
+        {
+            <p><span class="status-hidden">No Word file uploaded.</span></p>
+        }
+
+        <input type="file"
+               name="cvFile"
+               id="cvFile"
+               accept=".docx"
+               onchange="showSelectedDocx(this)" />
+
+        <small>If you choose a new file, it will replace the old file after saving.</small>
+
+        <div id="selectedDocxBox" class="admin-selected-file-box" style="display:none;">
+            <p><strong>New selected Word file:</strong> <span id="selectedDocxName"></span></p>
+            <p><strong>File size:</strong> <span id="selectedDocxSize"></span></p>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Description</label>
+        <textarea name="description">@Model.Description</textarea>
+    </div>
+
+    <div class="form-check">
+        <input type="checkbox" name="isActive" value="true" @(Model.IsActive ? "checked" : "") />
+        <label>Show this CV template</label>
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="admin-submit-btn">
+            Update CV Template
+        </button>
+
+        <a href="@Url.Action("Index", "AdminCVTemplates")" class="admin-back-btn">
+            Back
+        </a>
+    </div>
+
+</form>
+<script>
+    function showSelectedImage(input) {
+        var box = document.getElementById("selectedImageBox");
+        var name = document.getElementById("selectedImageName");
+        var preview = document.getElementById("selectedImagePreview");
+
+        if (input.files && input.files[0]) {
+            var file = input.files[0];
+
+            name.innerText = file.name;
+            preview.src = URL.createObjectURL(file);
+            box.style.display = "block";
+        }
+    }
+
+    function showSelectedDocx(input) {
+        var box = document.getElementById("selectedDocxBox");
+        var name = document.getElementById("selectedDocxName");
+        var size = document.getElementById("selectedDocxSize");
+
+        if (input.files && input.files[0]) {
+            var file = input.files[0];
+
+            name.innerText = file.name;
+            size.innerText = formatFileSize(file.size);
+            box.style.display = "block";
+        }
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes < 1024) {
+            return bytes + " B";
+        }
+
+        if (bytes < 1024 * 1024) {
+            return (bytes / 1024).toFixed(1) + " KB";
+        }
+
+        return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+    }
+</script>

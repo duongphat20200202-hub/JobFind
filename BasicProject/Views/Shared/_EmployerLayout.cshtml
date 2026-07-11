@@ -1,0 +1,144 @@
+﻿@{
+    var currentController = ViewContext.RouteData.Values["controller"] != null
+        ? ViewContext.RouteData.Values["controller"].ToString()
+        : "";
+
+    var currentAction = ViewContext.RouteData.Values["action"] != null
+        ? ViewContext.RouteData.Values["action"].ToString()
+        : "";
+
+    string userName = Session["UserName"] != null
+        ? Session["UserName"].ToString()
+        : "Account";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>@ViewBag.Title - Employer</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <link href="@Url.Content("~/Content/Site.css?v=20260521-2")" rel="stylesheet" />
+
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+</head>
+
+<body class="employer-body">
+
+    <header class="emp-header">
+        <div class="emp-header-inner">
+
+            <a href="@Url.Action("Index", "EmployerDashboard")" class="emp-logo">
+                <img src="@Url.Content("~/Content/images/headerlogo.jpg")"
+                     alt="JobFind Logo"
+                     class="emp-logo-img" />
+            </a>
+
+            <nav class="emp-nav">
+
+                <a href="@Url.Action("Edit", "EmployerCompany")"
+                   class="@(currentController == "EmployerCompany" ? "active" : "")">
+                    <i class="fa fa-building"></i>
+                    Company Profile
+                </a>
+
+                <a href="@Url.Action("Index", "EmployerJobs")"
+                   class="@(currentController == "EmployerJobs" && currentAction == "Index" ? "active" : "")">
+                    <i class="fa fa-briefcase"></i>
+                    Job Posts
+                </a>
+
+                <a href="@Url.Action("Create", "EmployerJobs")"
+                   class="@(currentController == "EmployerJobs" && currentAction == "Create" ? "active" : "")">
+                    <i class="fa fa-plus-circle"></i>
+                    Post a Job
+                </a>
+
+                <a href="@Url.Action("Index", "EmployerApplications")"
+                   class="@(currentController == "EmployerApplications" ? "active" : "")">
+                    <i class="fa fa-file-text"></i>
+                    Candidate Applications
+                </a>
+
+            </nav>
+
+            <div class="emp-header-actions">
+
+                <div class="emp-account-area">
+
+                    <button type="button" class="emp-account-btn" onclick="toggleEmployerAccountMenu(event)">
+                        <span class="emp-account-avatar">
+                            <i class="fa fa-user-circle"></i>
+                        </span>
+
+                        <span>@userName</span>
+
+                        <i class="fa fa-angle-down"></i>
+                    </button>
+
+                    <div class="emp-account-dropdown" id="employerAccountMenu">
+
+                        <a href="@Url.Action("Index", "EmployerDashboard")">
+                            <i class="fa fa-dashboard"></i>
+                            Dashboard
+                        </a>
+
+                        <a href="@Url.Action("Profile", "Account")">
+                            <i class="fa fa-user-circle"></i> My Profile
+                        </a>
+
+                        <a href="@Url.Action("Logout", "Account")" class="logout-link">
+                            <i class="fa fa-sign-out"></i>
+                            Logout
+                        </a>
+
+                    </div>
+
+                </div>
+
+                <a href="@Url.Action("Index", "Home")" class="site-switch-btn candidate-switch-btn">
+                    <i class="fa fa-user"></i>
+                    For Candidate
+                </a>
+
+            </div>
+
+        </div>
+    </header>
+
+    <main class="emp-main">
+        <div class="emp-container">
+            @RenderBody()
+        </div>
+    </main>
+
+    @RenderSection("scripts", required: false)
+
+    <script>
+        function toggleEmployerAccountMenu(e) {
+            e.stopPropagation();
+
+            var menu = document.getElementById("employerAccountMenu");
+
+            if (menu) {
+                menu.classList.toggle("show");
+            }
+        }
+
+        document.addEventListener("click", function (event) {
+            if (!event.target.closest(".emp-account-area")) {
+                var menu = document.getElementById("employerAccountMenu");
+
+                if (menu) {
+                    menu.classList.remove("show");
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>

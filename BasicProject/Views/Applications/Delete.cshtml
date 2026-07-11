@@ -1,0 +1,79 @@
+﻿@model BasicProject.Models.Application
+
+@{
+    ViewBag.Title = "Delete Application";
+}
+
+<div class="apply-result-page">
+    <div class="container">
+
+        <div class="apply-result-card delete-card">
+
+            <div class="result-icon warning">
+                <i class="fa fa-warning"></i>
+            </div>
+
+            <h1>Delete Application?</h1>
+
+            <p class="result-subtitle">
+                After deleting, the employer will no longer see your application for this job.
+                You can return to this job and submit another CV after deleting it.
+            </p>
+
+            <div class="result-info-table">
+
+                <div class="result-row">
+                    <span>Job</span>
+                    <strong>@Model.Job.Title</strong>
+                </div>
+
+                <div class="result-row">
+                    <span>Company</span>
+                    <strong>@(Model.Job.Company != null ? Model.Job.Company.CompanyName : "Updating")</strong>
+                </div>
+
+                <div class="result-row">
+                    <span>Submitted Date</span>
+                    <strong>
+                        @(Model.AppliedDate.HasValue ? Model.AppliedDate.Value.ToString("dd/MM/yyyy HH:mm") : "Unknown")
+                    </strong>
+                </div>
+
+                <div class="result-row">
+                    <span>Status</span>
+                    <strong class="status-pill">@Model.Status</strong>
+                </div>
+
+                <div class="result-row">
+                    <span>Submitted CV</span>
+
+                    @if (Model.CV != null && !string.IsNullOrEmpty(Model.CV.FilePath))
+                    {
+                        <a href="@Url.Content(Model.CV.FilePath)" target="_blank" class="open-cv-btn">
+                            <i class="fa fa-file-text-o"></i> Open CV
+                        </a>
+                    }
+                    else
+                    {
+                        <strong>CV not found</strong>
+                    }
+                </div>
+
+            </div>
+
+            <form action="@Url.Action("Delete", "Applications")" method="post" class="result-actions">
+                <input type="hidden" name="id" value="@Model.ApplicationID" />
+
+                <button type="submit" class="result-btn danger">
+                    <i class="fa fa-trash"></i> Confirm Delete
+                </button>
+
+                <a href="@Url.Action("ApplySuccess", "Applications", new { id = Model.ApplicationID })" class="result-btn light">
+                    Cancel
+                </a>
+            </form>
+
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,160 @@
+﻿@model IEnumerable<BasicProject.Models.ArticleJson>
+
+@{
+    ViewBag.Title = "Manage Career Tips";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@section styles {
+    <link rel="stylesheet" href="@Url.Content("~/Content/AdminCareerTips.css?v=1001")" />
+}
+
+<div class="admin-career-page">
+
+    <div class="admin-career-top-row">
+        <a href="@Url.Action("Create", "AdminCareerTips")" class="admin-career-add-btn">
+            <i class="fa fa-plus"></i>
+            Add Career Tip
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="auth-success">
+            @TempData["Success"]
+        </div>
+    }
+
+    <div class="admin-career-card-list">
+
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <div class="admin-career-card">
+
+                    <div class="admin-career-image-box">
+                        @if (!string.IsNullOrEmpty(item.Thumbnail))
+                        {
+                            <img src="@Url.Content(item.Thumbnail)" alt="@item.Title" />
+                        }
+                        else
+                        {
+                            <div class="admin-career-no-image">
+                                <i class="fa fa-image"></i>
+                                <span>No image</span>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="admin-career-main-info">
+
+                        <h3>@item.Title</h3>
+
+                        <p>
+                            @(string.IsNullOrEmpty(item.Summary) ? "No summary available." : item.Summary)
+                        </p>
+
+                        <div class="admin-career-meta-row">
+
+                            <span>
+                                <i class="fa fa-folder"></i>
+                                @(string.IsNullOrEmpty(item.Category) ? "Career Tips" : item.Category)
+                            </span>
+
+                            <span>
+                                <i class="fa fa-calendar"></i>
+                                @item.CreatedAt.ToString("dd/MM/yyyy")
+                            </span>
+
+                            @if (item.TargetAudience == "Employer")
+                            {
+                                <span class="career-audience employer">
+                                    <i class="fa fa-briefcase"></i>
+                                    Employer
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="career-audience candidate">
+                                    <i class="fa fa-user"></i>
+                                    Candidate
+                                </span>
+                            }
+
+                        </div>
+
+                    </div>
+
+                    <div class="admin-career-status-box">
+
+                        @if (item.IsActive)
+                        {
+                            <span class="career-status visible">
+                                <i class="fa fa-check-circle"></i>
+                                Visible
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="career-status hidden">
+                                <i class="fa fa-eye-slash"></i>
+                                Hidden
+                            </span>
+                        }
+
+                    </div>
+
+                    <div class="admin-career-actions">
+
+                        @if (item.TargetAudience == "Employer")
+                        {
+                            <a href="@Url.Action("Details", "EmployerServices", new { id = item.ArticleID })"
+                               target="_blank"
+                               class="admin-career-view-btn">
+                                <i class="fa fa-eye"></i>
+                                View
+                            </a>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("Details", "CareerTips", new { id = item.ArticleID })"
+                               target="_blank"
+                               class="admin-career-view-btn">
+                                <i class="fa fa-eye"></i>
+                                View
+                            </a>
+                        }
+
+                        <a href="@Url.Action("Edit", "AdminCareerTips", new { id = item.ArticleID })"
+                           class="admin-career-edit-btn">
+                            <i class="fa fa-pen"></i>
+                            Edit
+                        </a>
+
+                        <form method="post"
+                              action="@Url.Action("Delete", "AdminCareerTips", new { id = item.ArticleID })"
+                              onsubmit="return confirm('Are you sure you want to delete this career tip?');">
+                            <button type="submit" class="admin-career-delete-btn">
+                                <i class="fa fa-trash"></i>
+                                Delete
+                            </button>
+                        </form>
+
+                    </div>
+
+                </div>
+            }
+        }
+        else
+        {
+            <div class="admin-empty-box">
+                <i class="fa fa-newspaper"></i>
+                <h3>No career tips yet</h3>
+                <p>Add your first career tip to display it on the website.</p>
+            </div>
+        }
+
+    </div>
+
+</div>

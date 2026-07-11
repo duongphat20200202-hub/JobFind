@@ -1,0 +1,223 @@
+﻿@using System.Linq
+@model IEnumerable<BasicProject.Models.Job>
+
+@{
+    ViewBag.Title = "Job Posts";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    string currentStatus = ViewBag.CurrentStatus as string;
+}
+
+@section styles {
+    <link rel="stylesheet" href="@Url.Content("~/Content/AdminJobs.css?v=1002")" />
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="auth-success">
+        @TempData["Success"]
+    </div>
+}
+
+<div class="admin-job-modern-page">
+
+    <div class="admin-filter-tabs admin-job-tabs">
+
+        <a href="@Url.Action("Index", "AdminJobs")"
+           class="@(string.IsNullOrEmpty(currentStatus) ? "active" : "")">
+            All <span>@ViewBag.AllCount</span>
+        </a>
+
+        <a href="@Url.Action("Index", "AdminJobs", new { status = "Pending" })"
+           class="@(currentStatus == "Pending" ? "active" : "")">
+            Pending <span>@ViewBag.PendingCount</span>
+        </a>
+
+        <a href="@Url.Action("Index", "AdminJobs", new { status = "Approved" })"
+           class="@(currentStatus == "Approved" ? "active" : "")">
+            Approved <span>@ViewBag.ApprovedCount</span>
+        </a>
+
+        <a href="@Url.Action("Index", "AdminJobs", new { status = "Rejected" })"
+           class="@(currentStatus == "Rejected" ? "active" : "")">
+            Rejected <span>@ViewBag.RejectedCount</span>
+        </a>
+
+        <a href="@Url.Action("Index", "AdminJobs", new { status = "Expired" })"
+           class="@(currentStatus == "Expired" ? "active" : "")">
+            Expired <span>@ViewBag.ExpiredCount</span>
+        </a>
+
+        <a href="@Url.Action("Index", "AdminJobs", new { status = "Closed" })"
+           class="@(currentStatus == "Closed" ? "active" : "")">
+            Closed <span>@ViewBag.ClosedCount</span>
+        </a>
+
+    </div>
+
+    <div class="admin-job-card-list">
+
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                bool isExpired = item.Deadline.HasValue && item.Deadline.Value.Date < DateTime.Today;
+
+                string salaryText = item.Salary.HasValue
+                    ? item.Salary.Value.ToString("N0") + " USD"
+                    : "Negotiable";
+
+                <div class="admin-job-card">
+
+                    <div class="admin-job-left">
+
+                        <div class="admin-job-logo-box">
+                            @if (item.Company != null && !string.IsNullOrEmpty(item.Company.Logo))
+                            {
+                                <img src="@Url.Content(item.Company.Logo)" alt="@item.Company.CompanyName" />
+                            }
+                            else
+                            {
+                                <span>
+                                    @(item.Company != null && item.Company.CompanyName != null
+                                        ? item.Company.CompanyName.Substring(0, 1).ToUpper()
+                                        : "J")
+                                </span>
+                            }
+                        </div>
+
+                        <div class="admin-job-main-info">
+                            <h3>@item.Title</h3>
+
+                            <p class="admin-job-company">
+                                @(item.Company != null ? item.Company.CompanyName : "Updating")
+                            </p>
+
+                            <div class="admin-job-meta-row">
+                                <span>
+                                    <i class="fa fa-location-dot"></i>
+                                    @(string.IsNullOrEmpty(item.Location) ? "Updating" : item.Location)
+                                </span>
+
+                                <span>
+                                    <i class="fa fa-folder"></i>
+                                    @(item.Category != null ? item.Category.CategoryName : "Uncategorized")
+                                </span>
+
+                                <span>
+                                    <i class="fa fa-money-bill"></i>
+                                    @salaryText
+                                </span>
+
+                                <span>
+                                    <i class="fa fa-calendar-plus"></i>
+                                    @(item.CreatedAt.HasValue ? item.CreatedAt.Value.ToString("dd/MM/yyyy") : "N/A")
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="admin-job-center">
+
+                        <div class="admin-job-info-box">
+                            <span>Status</span>
+
+                            @if (isExpired)
+                            {
+                                <strong class="text-red">Expired</strong>
+                            }
+                            else if (item.Status == "Approved")
+                            {
+                                <strong class="text-green">Approved</strong>
+                            }
+                            else if (item.Status == "Rejected")
+                            {
+                                <strong class="text-red">Rejected</strong>
+                            }
+                            else if (item.Status == "Closed")
+                            {
+                                <strong class="text-gray">Closed</strong>
+                            }
+                            else
+                            {
+                                <strong class="text-orange">Pending</strong>
+                            }
+                        </div>
+
+                        <div class="admin-job-info-box">
+                            <span>Deadline</span>
+
+                            @if (item.Deadline.HasValue)
+                            {
+                                <strong class="@(isExpired ? "text-red" : "")">
+                                    @item.Deadline.Value.ToString("dd/MM/yyyy")
+                                </strong>
+                            }
+                            else
+                            {
+                                <strong>N/A</strong>
+                            }
+                        </div>
+
+                    </div>
+
+                    <div class="admin-job-actions">
+
+                        <a href="@Url.Action("Details", "AdminJobs", new { id = item.JobID })"
+                           class="admin-job-view-btn">
+                            <i class="fa fa-eye"></i>
+                            View
+                        </a>
+
+                        @if (item.Status != "Approved")
+                        {
+                            <form method="post" action="@Url.Action("Approve", "AdminJobs", new { id = item.JobID })">
+                                <button type="submit" class="admin-job-approve-btn">
+                                    <i class="fa fa-check"></i>
+                                    Approve
+                                </button>
+                            </form>
+                        }
+
+                        @if (item.Status != "Rejected")
+                        {
+                            <form method="post"
+                                  action="@Url.Action("Reject", "AdminJobs", new { id = item.JobID })"
+                                  onsubmit="return confirm('Are you sure you want to reject this job post?');">
+                                <button type="submit" class="admin-job-reject-btn">
+                                    <i class="fa fa-xmark"></i>
+                                    Reject
+                                </button>
+                            </form>
+                        }
+
+                        @if (item.Status != "Closed")
+                        {
+                            <form method="post"
+                                  action="@Url.Action("Close", "AdminJobs", new { id = item.JobID })"
+                                  onsubmit="return confirm('Are you sure you want to close this job post?');">
+                                <button type="submit" class="admin-job-close-btn">
+                                    <i class="fa fa-lock"></i>
+                                    Close
+                                </button>
+                            </form>
+                        }
+
+                    </div>
+
+                </div>
+            }
+        }
+        else
+        {
+            <div class="admin-empty-box">
+                <i class="fa fa-briefcase"></i>
+                <h3>No job posts found</h3>
+                <p>There are no job posts matching this filter.</p>
+            </div>
+        }
+
+    </div>
+
+</div>

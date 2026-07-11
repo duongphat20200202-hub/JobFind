@@ -1,0 +1,184 @@
+﻿@model IEnumerable<BasicProject.Models.CVTemplate>
+
+@{
+    ViewBag.Title = "CV Templates";
+
+    string currentCategory = ViewBag.CurrentCategory as string;
+    string keyword = ViewBag.Keyword as string;
+}
+
+<div class="cv-template-page">
+
+    <div class="container">
+
+        <div class="cv-filter-tabs">
+
+            <a href="@Url.Action("Index", "CVTemplates")"
+               class="@(string.IsNullOrEmpty(currentCategory) ? "active" : "")">
+                All Templates
+            </a>
+
+            <a href="@Url.Action("Index", "CVTemplates", new { category = "Professional", keyword = keyword })"
+               class="@(currentCategory == "Professional" ? "active" : "")">
+                Professional Templates
+            </a>
+
+            <a href="@Url.Action("Index", "CVTemplates", new { category = "Modern", keyword = keyword })"
+               class="@(currentCategory == "Modern" ? "active" : "")">
+                Modern Templates
+            </a>
+
+            <a href="@Url.Action("Index", "CVTemplates", new { category = "Student", keyword = keyword })"
+               class="@(currentCategory == "Student" ? "active" : "")">
+                Student Templates
+            </a>
+
+            <a href="@Url.Action("Index", "CVTemplates", new { category = "Simple", keyword = keyword })"
+               class="@(currentCategory == "Simple" ? "active" : "")">
+                Simple Templates
+            </a>
+
+        </div>
+
+        <div class="cv-template-hero">
+            <div class="cv-template-hero-text">
+                <span>Professional CV Templates</span>
+
+                <h1>Create a beautiful CV faster with ready-made templates</h1>
+
+                <p>
+                    Explore CV templates suitable for many career fields. You can preview,
+                    download the template file, and edit it with your personal information.
+                </p>
+
+                <div class="cv-hero-actions">
+                    <a href="#cv-list" class="cv-primary-btn">
+                        View CV Templates
+                    </a>
+
+                    <a href="@Url.Action("Index", "Jobs")" class="cv-secondary-btn">
+                        Find Jobs Now
+                    </a>
+                </div>
+            </div>
+
+            <div class="cv-template-hero-preview">
+                <div class="cv-paper paper-one">
+                    <div class="cv-circle"></div>
+                    <div class="cv-line long"></div>
+                    <div class="cv-line short"></div>
+                    <div class="cv-line"></div>
+                    <div class="cv-line long"></div>
+                    <div class="cv-box"></div>
+                </div>
+
+                <div class="cv-paper paper-two">
+                    <div class="cv-circle"></div>
+                    <div class="cv-line long"></div>
+                    <div class="cv-line short"></div>
+                    <div class="cv-line"></div>
+                    <div class="cv-line long"></div>
+                    <div class="cv-box"></div>
+                </div>
+            </div>
+        </div>
+
+        <form method="get" action="@Url.Action("Index", "CVTemplates")" class="career-tip-search">
+            <div class="career-tip-search-input">
+                <i class="fa fa-search"></i>
+                <input type="text"
+                       name="keyword"
+                       value="@keyword"
+                       placeholder="Search CV templates..." />
+            </div>
+
+            <select name="category">
+                <option value="">All Categories</option>
+                <option value="Professional" @(currentCategory == "Professional" ? "selected" : "")>Professional</option>
+                <option value="Modern" @(currentCategory == "Modern" ? "selected" : "")>Modern</option>
+                <option value="Student" @(currentCategory == "Student" ? "selected" : "")>Student</option>
+                <option value="Simple" @(currentCategory == "Simple" ? "selected" : "")>Simple</option>
+            </select>
+
+            <button type="submit">
+                Search
+            </button>
+
+            <a href="@Url.Action("Index", "CVTemplates")">
+                Clear
+            </a>
+        </form>
+
+
+        <div class="cv-section-title" id="cv-list">
+            <div>
+                <h2>Featured CV Templates</h2>
+                <p>Choose a template that matches your career field and personal style.</p>
+            </div>
+        </div>
+
+        @if (Model == null || !Model.Any())
+        {
+            <div class="cv-empty-box">
+                <i class="fa fa-file-text-o"></i>
+                <h3>No CV Templates Yet</h3>
+                <p>There are currently no CV templates posted by admin, or this category has no data.</p>
+            </div>
+        }
+        else
+        {
+            <div class="cv-template-grid">
+
+                @foreach (var item in Model)
+                {
+                    <div class="cv-template-card">
+
+                        <a href="@Url.Action("Details", "CVTemplates", new { id = item.TemplateID })"
+                           class="cv-template-image">
+
+                            @if (!string.IsNullOrEmpty(item.PreviewImage))
+                            {
+                                <img src="@Url.Content(item.PreviewImage)" alt="@item.TemplateName" />
+                            }
+                            else
+                            {
+                                <div class="cv-template-placeholder">
+                                    <i class="fa fa-file-text-o"></i>
+                                </div>
+                            }
+
+                        </a>
+
+                        <div class="cv-template-info">
+                            <span>@item.Category</span>
+
+                            <h3>@item.TemplateName</h3>
+
+                            <p>
+                                @(string.IsNullOrEmpty(item.Description)
+                                    ? "A clean, editable CV template suitable for job candidates."
+                                    : item.Description)
+                            </p>
+
+                            <div class="cv-template-actions">
+                                <a href="@Url.Action("Details", "CVTemplates", new { id = item.TemplateID })"
+                                   class="cv-preview-btn">
+                                    Preview
+                                </a>
+
+                                <a href="@Url.Action("Download", "CVTemplates", new { id = item.TemplateID })"
+                                   class="cv-download-btn">
+                                    Download
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+        }
+
+    </div>
+
+</div>

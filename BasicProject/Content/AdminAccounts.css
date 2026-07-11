@@ -1,0 +1,546 @@
+﻿/* =========================================================
+   ADMIN ACCOUNTS PAGE
+   File: Content/AdminAccounts.css
+   Page: Views/AdminUsers/Index.cshtml
+========================================================= */
+
+.admin-account-modern-page {
+    width: 100%;
+}
+
+/* =========================================================
+   1. SUMMARY CARDS
+========================================================= */
+
+.admin-account-stat-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 18px;
+    margin-bottom: 18px;
+}
+
+.admin-account-stat-card {
+    min-height: 118px;
+    padding: 24px 26px;
+    border-radius: 18px;
+    border: 1px solid #d7e4ff;
+    background: linear-gradient(135deg, #eef6ff 0%, #f8fbff 100%);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.14);
+    position: relative;
+    overflow: hidden;
+}
+
+    .admin-account-stat-card::after {
+        content: "";
+        width: 68px;
+        height: 68px;
+        border-radius: 999px;
+        position: absolute;
+        right: -18px;
+        top: -18px;
+        background: rgba(13, 110, 253, 0.08);
+    }
+
+    .admin-account-stat-card.candidate::after {
+        background: rgba(13, 110, 253, 0.12);
+    }
+
+    .admin-account-stat-card.employer::after {
+        background: rgba(255, 152, 0, 0.16);
+    }
+
+    .admin-account-stat-card.admin::after {
+        background: rgba(126, 34, 206, 0.14);
+    }
+
+    .admin-account-stat-card.active::after {
+        background: rgba(22, 163, 74, 0.14);
+    }
+
+    .admin-account-stat-card.locked::after {
+        background: rgba(220, 38, 38, 0.14);
+    }
+
+    .admin-account-stat-card span {
+        display: block;
+        color: #64748b;
+        font-size: 14px;
+        font-weight: 900;
+        margin-bottom: 10px;
+    }
+
+    .admin-account-stat-card strong {
+        display: block;
+        color: #001f5b;
+        font-size: 40px;
+        line-height: 1;
+        font-weight: 950;
+    }
+
+/* =========================================================
+   2. FILTER BAR
+========================================================= */
+
+.admin-account-filter-bar {
+    display: grid;
+    grid-template-columns: 1fr 170px 170px 120px 120px;
+    gap: 12px;
+    padding: 14px;
+    margin-bottom: 16px;
+    border-radius: 18px;
+    background: rgba(15, 23, 42, 0.22);
+    border: none;
+}
+
+.admin-account-search,
+.admin-account-select {
+    height: 48px;
+    padding: 0 14px;
+    border-radius: 12px;
+    background: #ffffff;
+    border: 1px solid #d7e4ff;
+    display: flex;
+    align-items: center;
+}
+
+    .admin-account-search i {
+        color: #0d6efd;
+        margin-right: 10px;
+    }
+
+    .admin-account-search input,
+    .admin-account-select select {
+        width: 100%;
+        border: none;
+        outline: none;
+        background: transparent;
+        color: #001f5b;
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+        .admin-account-search input::placeholder {
+            color: #94a3b8;
+        }
+
+.admin-account-filter-btn,
+.admin-account-clear-btn {
+    height: 48px;
+    border-radius: 12px;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 950;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.admin-account-filter-btn {
+    background: #0d6efd;
+    color: #ffffff;
+}
+
+    .admin-account-filter-btn:hover {
+        background: #005fe8;
+    }
+
+.admin-account-clear-btn {
+    background: #ffffff;
+    color: #0d6efd;
+    border: 1px solid #d7e4ff;
+}
+
+    .admin-account-clear-btn:hover {
+        background: #eef4ff;
+        color: #0d6efd;
+        text-decoration: none;
+    }
+
+/* =========================================================
+   3. FILTER TABS
+========================================================= */
+
+.admin-account-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+    .admin-account-tabs a {
+        min-height: 42px;
+        padding: 0 17px;
+        border-radius: 999px;
+        background: #ffffff;
+        color: #0d6efd;
+        border: 1px solid #d7e4ff;
+        font-weight: 950;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        transition: 0.2s ease;
+    }
+
+        .admin-account-tabs a span {
+            min-width: 24px;
+            height: 24px;
+            padding: 0 7px;
+            border-radius: 999px;
+            background: #eef4ff;
+            color: #0d6efd;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 950;
+        }
+
+        .admin-account-tabs a.active,
+        .admin-account-tabs a:hover {
+            background: #0d6efd;
+            border-color: #0d6efd;
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+            .admin-account-tabs a.active span,
+            .admin-account-tabs a:hover span {
+                background: #ffffff;
+                color: #0d6efd;
+            }
+
+/* =========================================================
+   4. ACCOUNT CARD LIST
+========================================================= */
+
+.admin-account-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.admin-account-card {
+    min-height: 118px;
+    padding: 24px;
+    border-radius: 18px;
+    background: #ffffff;
+    border: 1px solid #d7e4ff;
+    display: grid;
+    grid-template-columns: 1.15fr 1.25fr 150px;
+    align-items: center;
+    gap: 24px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+    transition: 0.22s ease;
+}
+
+    .admin-account-card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(13, 110, 253, 0.45);
+        box-shadow: 0 18px 34px rgba(13, 110, 253, 0.13);
+    }
+
+/* =========================================================
+   5. LEFT USER INFO
+========================================================= */
+
+.admin-account-card-left {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    min-width: 0;
+}
+
+.admin-account-avatar-large {
+    width: 54px;
+    height: 54px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #0d6efd, #3b82f6);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 950;
+    box-shadow: 0 10px 20px rgba(13, 110, 253, 0.25);
+    flex-shrink: 0;
+}
+
+.admin-account-main-info {
+    min-width: 0;
+}
+
+.admin-account-name-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.admin-account-main-info h3 {
+    margin: 0;
+    color: #001f5b;
+    font-size: 21px;
+    line-height: 1.2;
+    font-weight: 950;
+}
+
+.admin-account-id-badge {
+    min-height: 24px;
+    padding: 0 9px;
+    border-radius: 999px;
+    background: #eef4ff;
+    color: #0d6efd;
+    font-size: 12px;
+    font-weight: 900;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.admin-account-main-info p {
+    margin: 0;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    word-break: break-word;
+}
+
+    .admin-account-main-info p i {
+        color: #0d6efd;
+    }
+
+/* =========================================================
+   6. CENTER INFO BOXES
+========================================================= */
+
+.admin-account-card-center {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.admin-account-info-box {
+    min-height: 66px;
+    padding: 13px 15px;
+    border-radius: 13px;
+    background: #f8fbff;
+    border: 1px solid #dbe7fb;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+    .admin-account-info-box span {
+        color: #64748b;
+        font-size: 12px;
+        font-weight: 900;
+        margin-bottom: 5px;
+    }
+
+    .admin-account-info-box strong {
+        color: #001f5b;
+        font-size: 17px;
+        font-weight: 950;
+        line-height: 1.2;
+    }
+
+/* =========================================================
+   7. RIGHT ACTION BUTTONS
+========================================================= */
+
+.admin-account-card-actions {
+    width: 150px;
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+    .admin-account-card-actions form {
+        margin: 0;
+    }
+
+.admin-card-view-btn,
+.admin-card-lock-btn,
+.admin-card-unlock-btn,
+.admin-card-reject-btn,
+.admin-card-approve-btn {
+    width: 100%;
+    min-height: 40px;
+    border-radius: 11px;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 950;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.admin-card-view-btn {
+    background: #eef4ff;
+    color: #0d6efd;
+}
+
+    .admin-card-view-btn:hover {
+        background: #dbeafe;
+        color: #0d6efd;
+        text-decoration: none;
+    }
+
+.admin-card-lock-btn,
+.admin-card-reject-btn {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+    .admin-card-lock-btn:hover,
+    .admin-card-reject-btn:hover {
+        background: #fecaca;
+    }
+
+.admin-card-unlock-btn,
+.admin-card-approve-btn {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+    .admin-card-unlock-btn:hover,
+    .admin-card-approve-btn:hover {
+        background: #bbf7d0;
+    }
+
+/* =========================================================
+   8. TEXT COLORS
+========================================================= */
+
+.admin-account-modern-page .text-blue {
+    color: #0d6efd !important;
+}
+
+.admin-account-modern-page .text-orange {
+    color: #ff9800 !important;
+}
+
+.admin-account-modern-page .text-purple {
+    color: #7e22ce !important;
+}
+
+.admin-account-modern-page .text-green {
+    color: #16a34a !important;
+}
+
+.admin-account-modern-page .text-red {
+    color: #dc2626 !important;
+}
+
+/* =========================================================
+   9. EMPTY BOX
+========================================================= */
+
+.admin-empty-box {
+    background: #ffffff;
+    border: 1px dashed #d7e4ff;
+    border-radius: 18px;
+    padding: 40px;
+    text-align: center;
+    color: #64748b;
+}
+
+    .admin-empty-box i {
+        font-size: 38px;
+        color: #0d6efd;
+        margin-bottom: 12px;
+    }
+
+    .admin-empty-box h3 {
+        color: #001f5b;
+        font-size: 22px;
+        font-weight: 950;
+        margin: 0 0 8px;
+    }
+
+    .admin-empty-box p {
+        margin: 0;
+        font-weight: 750;
+    }
+
+/* =========================================================
+   10. RESPONSIVE
+========================================================= */
+
+@media (max-width: 1300px) {
+    .admin-account-stat-row {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .admin-account-card {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-account-card-actions {
+        width: 100%;
+        flex-direction: row;
+        margin-left: 0;
+    }
+
+    .admin-card-view-btn,
+    .admin-card-lock-btn,
+    .admin-card-unlock-btn,
+    .admin-card-reject-btn,
+    .admin-card-approve-btn {
+        width: auto;
+        padding: 0 16px;
+    }
+}
+
+@media (max-width: 900px) {
+    .admin-account-filter-bar {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-account-stat-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .admin-account-card-center {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-account-card-actions {
+        flex-direction: column;
+    }
+
+    .admin-card-view-btn,
+    .admin-card-lock-btn,
+    .admin-card-unlock-btn,
+    .admin-card-reject-btn,
+    .admin-card-approve-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .admin-account-stat-row {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-account-card-left {
+        align-items: flex-start;
+    }
+
+    .admin-account-name-row {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+    }
+}

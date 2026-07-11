@@ -1,0 +1,217 @@
+﻿@model IEnumerable<BasicProject.Models.ArticleJson>
+
+@{
+    ViewBag.Title = "Career Tips";
+
+    string currentCategory = ViewBag.CurrentCategory as string;
+    string keyword = ViewBag.Keyword as string;
+
+    var featuredTip = ViewBag.FeaturedTip as BasicProject.Models.ArticleJson;
+    var latestTips = ViewBag.LatestTips as List<BasicProject.Models.ArticleJson>;
+    var popularTips = ViewBag.PopularTips as List<BasicProject.Models.ArticleJson>;
+}
+
+<div class="articles-page">
+
+    <div class="container">
+
+        <div class="article-filter-tabs">
+
+            <a href="@Url.Action("Index", "CareerTips")"
+               class="@(string.IsNullOrEmpty(currentCategory) ? "active" : "")">
+                All
+            </a>
+
+            <a href="@Url.Action("Index", "CareerTips", new { category = "Career Orientation" })"
+               class="@(currentCategory == "Career Orientation" ? "active" : "")">
+                Career Orientation
+            </a>
+
+            <a href="@Url.Action("Index", "CareerTips", new { category = "Career Advice" })"
+               class="@(currentCategory == "Career Advice" ? "active" : "")">
+                Career Advice
+            </a>
+
+            <a href="@Url.Action("Index", "CareerTips", new { category = "CV / Resume Writing" })"
+               class="@(currentCategory == "CV / Resume Writing" ? "active" : "")">
+                CV / Resume Writing
+            </a>
+
+            <a href="@Url.Action("Index", "CareerTips", new { category = "Job Interview" })"
+               class="@(currentCategory == "Job Interview" ? "active" : "")">
+                Job Interview
+            </a>
+
+            <a href="@Url.Action("Index", "CareerTips", new { category = "Workplace Skills" })"
+               class="@(currentCategory == "Workplace Skills" ? "active" : "")">
+                Workplace Skills
+            </a>
+
+        </div>
+
+        <div class="articles-hero career-image-hero"
+             style="background-image: url('@Url.Content("~/Content/images/career-banner.png")');">
+            <div class="articles-hero-overlay">
+
+                <div class="articles-hero-text">
+                    <h1>
+                        Explore insights<br />
+                        and practical<br />
+                        career advice
+                    </h1>
+
+                </div>
+
+            </div>
+        </div>
+
+        @if (featuredTip != null)
+        {
+            <div class="career-featured-tip">
+                <a href="@Url.Action("Details", "CareerTips", new { id = featuredTip.ArticleID })" class="career-featured-image">
+                    @if (!string.IsNullOrEmpty(featuredTip.Thumbnail))
+                    {
+                        <img src="@Url.Content(featuredTip.Thumbnail)" alt="@featuredTip.Title" />
+                    }
+                    else
+                    {
+                        <div class="article-no-image">
+                            <i class="fa fa-newspaper-o"></i>
+                        </div>
+                    }
+                </a>
+
+                <div class="career-featured-info">
+                    <span>@(string.IsNullOrEmpty(featuredTip.Category) ? "Career Tips" : featuredTip.Category)</span>
+                    <h2>@featuredTip.Title</h2>
+                    <p>@featuredTip.Summary</p>
+
+                    <a href="@Url.Action("Details", "CareerTips", new { id = featuredTip.ArticleID })" class="career-read-more">
+                        Read Article <i class="fa fa-angle-right"></i>
+                    </a>
+                </div>
+            </div>
+        }
+
+        <div class="career-tip-layout">
+
+            <div class="career-tip-main">
+
+                <div class="career-section-title-line">
+                    <h2>
+                        @if (!string.IsNullOrWhiteSpace(keyword))
+                        {
+                            @:Search results for "@keyword"
+                        }
+                        else
+                        {
+                            @:All Career Tips
+                        }
+                    </h2>
+                </div>
+
+                @if (Model != null && Model.Any())
+                {
+                    <div class="article-grid">
+                        @foreach (var item in Model)
+                        {
+                            <a href="@Url.Action("Details", "CareerTips", new { id = item.ArticleID })"
+                               class="article-card">
+
+                                <div class="article-card-image">
+                                    @if (!string.IsNullOrEmpty(item.Thumbnail))
+                                    {
+                                        <img src="@Url.Content(item.Thumbnail)" alt="@item.Title" />
+                                    }
+                                    else
+                                    {
+                                        <span>No image yet</span>
+                                    }
+                                </div>
+
+                                <div class="article-card-info">
+                                    <span>@(string.IsNullOrEmpty(item.Category) ? "Career Tips" : item.Category)</span>
+                                    <h3>@item.Title</h3>
+                                    <p>@item.Summary</p>
+
+                                    <div class="article-card-date">
+                                        <i class="fa fa-calendar"></i>
+                                        @item.CreatedAt.ToString("dd/MM/yyyy")
+                                    </div>
+                                </div>
+
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="article-empty-box">
+                        No career tips found. Try another keyword or category.
+                    </div>
+                }
+
+            </div>
+
+            <aside class="career-tip-sidebar">
+
+                <div class="career-side-box">
+                    <h3>Latest Articles</h3>
+
+                    @if (latestTips != null && latestTips.Any())
+                    {
+                        foreach (var item in latestTips)
+                        {
+                            <a href="@Url.Action("Details", "CareerTips", new { id = item.ArticleID })" class="career-side-post">
+                                @if (!string.IsNullOrEmpty(item.Thumbnail))
+                                {
+                                    <img src="@Url.Content(item.Thumbnail)" alt="@item.Title" />
+                                }
+                                else
+                                {
+                                    <div class="career-side-no-img">
+                                        <i class="fa fa-newspaper-o"></i>
+                                    </div>
+                                }
+
+                                <div>
+                                    <strong>@item.Title</strong>
+                                    <span>@item.CreatedAt.ToString("dd/MM/yyyy")</span>
+                                </div>
+                            </a>
+                        }
+                    }
+                </div>
+
+                <div class="career-side-box">
+                    <h3>Featured Topics</h3>
+
+                    <a href="@Url.Action("Index", "CareerTips", new { category = "CV / Resume Writing" })">CV Writing</a>
+                    <a href="@Url.Action("Index", "CareerTips", new { category = "Job Interview" })">Interview</a>
+                    <a href="@Url.Action("Index", "CareerTips", new { category = "Workplace Skills" })">Workplace Skills</a>
+                    <a href="@Url.Action("Index", "CareerTips", new { category = "Career Orientation" })">Career Orientation</a>
+                    <a href="@Url.Action("Index", "CareerTips", new { category = "Career Advice" })">Career Advice</a>
+                </div>
+
+                <div class="career-side-box">
+                    <h3>Popular Articles</h3>
+
+                    @if (popularTips != null && popularTips.Any())
+                    {
+                        foreach (var item in popularTips)
+                        {
+                            <a href="@Url.Action("Details", "CareerTips", new { id = item.ArticleID })" class="career-popular-link">
+                                <i class="fa fa-angle-right"></i>
+                                @item.Title
+                            </a>
+                        }
+                    }
+                </div>
+
+            </aside>
+
+        </div>
+
+    </div>
+
+</div>

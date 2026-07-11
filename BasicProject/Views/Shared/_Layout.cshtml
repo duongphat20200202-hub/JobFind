@@ -1,0 +1,225 @@
+﻿
+@{
+    string displayName = "Account";
+
+    if (Session["UserID"] != null && Session["UserName"] != null)
+    {
+        displayName = Session["UserName"].ToString();
+
+        if (!string.IsNullOrWhiteSpace(displayName))
+        {
+            displayName = char.ToUpper(displayName[0]) + displayName.Substring(1).ToLower();
+        }
+    }
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Tìm Kiếm Việc Làm Nhanh Chóng</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link href="@Url.Content("~/Content/bootstrap.css")" rel="stylesheet" />
+    <link href="@Url.Content("~/Content/Site.css")?v=@DateTime.Now.Ticks" rel="stylesheet" />
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+
+<body>
+    <div class="header">
+        <div class="container">
+            <div class="navbar">
+
+                <!-- Logo -->
+                <div class="logo">
+                    <a href="@Url.Action("Index", "Home")">
+                        <img src="@Url.Content("~/Content/images/headerlogo.jpg")" alt="JobFind Logo" />
+                    </a>
+                </div>
+
+                <!-- Menu -->
+                <nav>
+                    <ul class="navbar-menu">
+
+                        <li>
+                            <a href="@Url.Action("Index", "Jobs")">
+                                <i class="fa fa-search"></i> Job Categories
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="@Url.Action("Index", "Employers")">
+                                <i class="fa fa-building"></i> Companies
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="@Url.Action("Index", "CareerTips")">
+                                <i class="fa fa-book"></i> Career Tips
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="@Url.Action("Index", "CVTemplates")">
+                                <i class="fa fa-file-text-o"></i> CV Templates
+                            </a>
+                        </li>
+
+                    </ul>
+                </nav>
+
+                <div class="header-right-actions">
+                    <div class="account-area">
+
+                        <button type="button" class="account-button" onclick="toggleAccountMenu(event)">
+                            <span class="account-avatar">
+                                <i class="fa fa-user"></i>
+                            </span>
+
+                            <span class="account-name">
+                                @displayName
+                            </span>
+
+                            <i class="fa fa-angle-down"></i>
+                        </button>
+
+                        <div class="account-login-box" id="accountMenu">
+
+                            @if (Session["UserID"] == null)
+                            {
+                                <div class="account-dropdown-menu">
+
+                                    <a href="@Url.Action("Login", "Account", new { role = "Candidate" })">
+                                        <i class="fa fa-sign-in"></i>
+                                        Candidate Login
+                                    </a>
+
+                                    <a href="@Url.Action("Register", "Account", new { role = "Candidate" })">
+                                        <i class="fa fa-user-plus"></i>
+                                        Candidate Register
+                                    </a>
+
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="logged-account-menu">
+
+                                    @if (Session["Role"] != null && Session["Role"].ToString() == "Admin")
+                                    {
+                                        <a href="@Url.Action("Index", "AdminDashboard")">
+                                            <i class="fa fa-dashboard"></i> Admin Dashboard
+                                        </a>
+                                    }
+
+                                    @if (Session["Role"] != null && Session["Role"].ToString() == "Candidate")
+                                    {
+                                        <a href="@Url.Action("Index", "SavedJobs")">
+                                            <i class="fa fa-heart"></i> Saved Jobs
+                                        </a>
+
+                                        <a href="@Url.Action("MyApplications", "Applications")">
+                                            <i class="fa fa-file-text"></i> My Applications
+                                        </a>
+                                    }
+
+                                    <a href="@Url.Action("Profile", "Account")">
+                                        <i class="fa fa-user-circle"></i> My Profile
+                                    </a>
+
+                                    <a href="@Url.Action("Logout", "Account")">
+                                        <i class="fa fa-sign-out"></i> Logout
+                                    </a>
+
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+
+                    <a href="@Url.Action("Index", "EmployerServices")" class="site-switch-btn employer-switch-btn">
+                        <i class="fa fa-briefcase"></i>
+                        For Employer
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    @RenderBody()
+
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h3>JOB FIND</h3>
+                    <p>Connecting candidates with trusted employers nationwide.</p>
+
+                    <div class="social-links">
+                        <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                        <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-column">
+                    <h4>For Candidates</h4>
+                    <a href="/Jobs">Find Job</a>
+                    <a href="/CVs">CV Templates</a>
+                    <a href="/Account/Register">Create an Account</a>
+                </div>
+
+                <div class="footer-column">
+                    <h4>For Employers</h4>
+                    <a href="/Employers">Company list</a>
+                    <a href="/Jobs/Create">Post a Job</a>
+                    <a href="/Account/Login">Login</a>
+                </div>
+
+                <div class="footer-column">
+                    <h4>Contact</h4>
+                    <p><i class="fa-solid fa-envelope"></i> support@qltimviec.vn</p>
+                    <p><i class="fa-solid fa-phone"></i> 0123 456 789</p>
+                    <p><i class="fa-solid fa-location-dot"></i> Hồ Chí Minh, Việt Nam</p>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; @DateTime.Now.Year - JOB FIND. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+
+    @RenderSection("scripts", required: false)
+    <script>
+        function toggleAccountMenu(e) {
+            e.stopPropagation();
+
+            var menu = document.getElementById("accountMenu");
+            if (menu) {
+                menu.classList.toggle("show");
+            }
+        }
+
+        document.addEventListener("click", function (event) {
+            if (!event.target.closest(".account-area")) {
+                var menu = document.getElementById("accountMenu");
+                if (menu) {
+                    menu.classList.remove("show");
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>

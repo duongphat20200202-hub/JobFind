@@ -1,0 +1,205 @@
+﻿@using System.Linq
+@model IEnumerable<BasicProject.Models.Company>
+
+@{
+    ViewBag.Title = "Approve Companies";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    string currentStatus = ViewBag.CurrentStatus as string;
+    int totalCompanies = Model != null ? Model.Count() : 0;
+}
+
+@section styles {
+    <link rel="stylesheet" href="@Url.Content("~/Content/AdminCompanies.css?v=1002")" />
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="auth-success">
+        @TempData["Success"]
+    </div>
+}
+
+<div class="admin-company-modern-page">
+
+    <div class="admin-company-stat-row">
+
+        <div class="admin-company-stat-card pending">
+            <span>Pending</span>
+            <strong>@ViewBag.PendingCount</strong>
+        </div>
+
+        <div class="admin-company-stat-card approved">
+            <span>Approved</span>
+            <strong>@ViewBag.ApprovedCount</strong>
+        </div>
+
+        <div class="admin-company-stat-card rejected">
+            <span>Rejected</span>
+            <strong>@ViewBag.RejectedCount</strong>
+        </div>
+
+    </div>
+
+    <div class="admin-filter-tabs admin-company-tabs">
+
+        <a href="@Url.Action("Index", "AdminCompanies")"
+           class="@(string.IsNullOrEmpty(currentStatus) ? "active" : "")">
+            All <span>@totalCompanies</span>
+        </a>
+
+        <a href="@Url.Action("Index", "AdminCompanies", new { status = "Pending" })"
+           class="@(currentStatus == "Pending" ? "active" : "")">
+            Pending <span>@ViewBag.PendingCount</span>
+        </a>
+
+        <a href="@Url.Action("Index", "AdminCompanies", new { status = "Approved" })"
+           class="@(currentStatus == "Approved" ? "active" : "")">
+            Approved <span>@ViewBag.ApprovedCount</span>
+        </a>
+
+        <a href="@Url.Action("Index", "AdminCompanies", new { status = "Rejected" })"
+           class="@(currentStatus == "Rejected" ? "active" : "")">
+            Rejected <span>@ViewBag.RejectedCount</span>
+        </a>
+
+    </div>
+
+    <div class="admin-company-card-list">
+
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <div class="admin-company-card">
+
+                    <div class="admin-company-left">
+
+                        <div class="admin-company-logo-box">
+                            @if (!string.IsNullOrEmpty(item.Logo))
+                            {
+                                <img src="@Url.Content(item.Logo)" alt="@item.CompanyName" />
+                            }
+                            else
+                            {
+                                <span>
+                                    @(item.CompanyName != null ? item.CompanyName.Substring(0, 1).ToUpper() : "C")
+                                </span>
+                            }
+                        </div>
+
+                        <div class="admin-company-main-info">
+                            <h3>@item.CompanyName</h3>
+
+                            <div class="admin-company-meta-row">
+
+                                @if (!string.IsNullOrEmpty(item.Website))
+                                {
+                                    <span>
+                                        <i class="fa fa-globe"></i>
+                                        <a href="@item.Website" target="_blank">@item.Website</a>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span>
+                                        <i class="fa fa-globe"></i>
+                                        No website yet
+                                    </span>
+                                }
+
+                                <span>
+                                    <i class="fa fa-envelope"></i>
+                                    @(string.IsNullOrEmpty(item.Email) ? "No email yet" : item.Email)
+                                </span>
+
+                                <span>
+                                    <i class="fa fa-phone"></i>
+                                    @(string.IsNullOrEmpty(item.Phone) ? "No phone number yet" : item.Phone)
+                                </span>
+
+                                <span>
+                                    <i class="fa fa-location-dot"></i>
+                                    @(string.IsNullOrEmpty(item.Location) ? "Updating" : item.Location)
+                                </span>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="admin-company-center">
+
+                        <div class="admin-company-info-box">
+                            <span>Status</span>
+
+                            @if (item.Status == "Approved")
+                            {
+                                <strong class="text-green">Approved</strong>
+                            }
+                            else if (item.Status == "Rejected")
+                            {
+                                <strong class="text-red">Rejected</strong>
+                            }
+                            else
+                            {
+                                <strong class="text-orange">Pending</strong>
+                            }
+                        </div>
+
+                        <div class="admin-company-info-box">
+                            <span>Created</span>
+                            <strong>
+                                @(item.CreatedAt.HasValue ? item.CreatedAt.Value.ToString("dd/MM/yyyy") : "N/A")
+                            </strong>
+                        </div>
+
+                    </div>
+
+                    <div class="admin-company-actions">
+
+                        <a href="@Url.Action("Details", "AdminCompanies", new { id = item.CompanyID })"
+                           class="admin-company-view-btn">
+                            <i class="fa fa-eye"></i>
+                            View
+                        </a>
+
+                        @if (item.Status != "Approved")
+                        {
+                            <form method="post" action="@Url.Action("Approve", "AdminCompanies", new { id = item.CompanyID })">
+                                <button type="submit" class="admin-company-approve-btn">
+                                    <i class="fa fa-check"></i>
+                                    Approve
+                                </button>
+                            </form>
+                        }
+
+                        @if (item.Status != "Rejected")
+                        {
+                            <form method="post"
+                                  action="@Url.Action("Reject", "AdminCompanies", new { id = item.CompanyID })"
+                                  onsubmit="return confirm('Are you sure you want to reject this company?');">
+                                <button type="submit" class="admin-company-reject-btn">
+                                    <i class="fa fa-xmark"></i>
+                                    Reject
+                                </button>
+                            </form>
+                        }
+
+                    </div>
+
+                </div>
+            }
+        }
+        else
+        {
+            <div class="admin-empty-box">
+                <i class="fa fa-building"></i>
+                <h3>No companies found</h3>
+                <p>There are no company profiles matching this filter.</p>
+            </div>
+        }
+
+    </div>
+
+</div>

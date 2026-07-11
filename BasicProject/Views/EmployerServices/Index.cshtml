@@ -1,0 +1,254 @@
+﻿@using BasicProject.Models
+@{
+    ViewBag.Title = "Employer Recruitment Solution";
+    Layout = "~/Views/Shared/_EmployerPublicLayout.cshtml";
+    var employerArticles = ViewBag.EmployerArticles as List<ArticleJson>;
+}
+
+<main class="employer-public-page">
+
+    <!-- SLIDE 1: BANNER NHÀ TUYỂN DỤNG -->
+    <section class="employer-public-hero">
+
+        <img src="@Url.Content("~/Content/images/employer-banner.png")"
+             alt="Employer Recruitment"
+             class="employer-public-hero-img" />
+
+        <div class="employer-public-hero-overlay"></div>
+
+        <div class="employer-public-hero-content">
+
+            <h1>
+                Find the right candidates<br />
+                faster with JOB FIND
+            </h1>
+
+            <p>
+                Post jobs, promote your company, receive candidate applications,
+                and manage recruitment activities in one professional platform.
+            </p>
+
+        </div>
+
+    </section>
+
+    <!-- SLIDE 2: DỊCH VỤ -->
+    <section class="employer-service-section">
+        <div class="container">
+
+            <div class="employer-section-title">
+                <span>Our Services</span>
+                <h2>Recruitment services for employers</h2>
+                <p>
+                    JobFind provides simple tools to help employers publish jobs,
+                    promote company information, and manage candidate applications.
+                </p>
+            </div>
+
+            <div class="employer-service-grid">
+
+                <div class="employer-service-card">
+                    <div class="employer-service-icon">
+                        <i class="fa fa-briefcase"></i>
+                    </div>
+
+                    <h3>Job Posting</h3>
+                    <p>
+                        Post recruitment jobs with salary, requirements, benefits,
+                        deadline, and hiring quantity.
+                    </p>
+                </div>
+
+                <div class="employer-service-card">
+                    <div class="employer-service-icon">
+                        <i class="fa fa-building"></i>
+                    </div>
+
+                    <h3>Company Profile</h3>
+                    <p>
+                        Display company logo, description, website, address,
+                        and active job posts to candidates.
+                    </p>
+                </div>
+
+                <div class="employer-service-card">
+                    <div class="employer-service-icon">
+                        <i class="fa fa-file-text"></i>
+                    </div>
+
+                    <h3>Application Management</h3>
+                    <p>
+                        Review candidate CVs, check application status,
+                        and manage recruitment progress.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- SLIDE 3: TẠI SAO CHỌN JOBFIND -->
+    <section class="employer-why-section">
+        <div class="container">
+
+            <div class="employer-why-layout">
+
+                <div class="employer-why-text">
+                    <span>Why choose JobFind?</span>
+
+                    <h2>
+                        A simple recruitment platform for small and medium companies
+                    </h2>
+
+                    <p>
+                        JobFind helps employers reach candidates faster through
+                        job posts, company pages, CV applications, and an easy-to-use
+                        employer dashboard.
+                    </p>
+
+                    <div class="employer-why-list">
+                        <p><i class="fa fa-check-circle"></i> Easy to post and manage jobs</p>
+                        <p><i class="fa fa-check-circle"></i> Company information displayed publicly</p>
+                        <p><i class="fa fa-check-circle"></i> Candidate applications managed in one place</p>
+                        <p><i class="fa fa-check-circle"></i> Clean interface suitable for recruitment teams</p>
+                    </div>
+                </div>
+
+                <div class="employer-why-image">
+                    <img src="@Url.Content("~/Content/images/jobfind-laptop.png")"
+                         alt="JobFind Dashboard Preview" />
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- SLIDE 4: BANNER KHÁCH HÀNG -->
+    <section class="emp-client-banner-section">
+        <div class="emp-public-container">
+
+            <div class="emp-public-section-head">
+                <span>OUR CLIENTS</span>
+            </div>
+
+            <a href="@Url.Action("Index", "EmployerServices")" class="emp-client-banner-link">
+                <img src="@Url.Content("~/Content/images/employer-client-banner.jpg")"
+                     alt="Our Clients - JobFind Employers"
+                     class="emp-client-banner-img" />
+            </a>
+
+        </div>
+    </section>
+
+    <!-- SLIDE 5: CẨM NANG TUYỂN DỤNG -->
+    <section class="employer-guide-section">
+        <div class="container">
+
+            <div class="employer-section-title">
+                <span>Hiring Guide</span>
+            </div>
+
+            @if (employerArticles != null && employerArticles.Any())
+            {
+                var mainArticle = employerArticles.First();
+                var sideArticles = employerArticles.Skip(1).Take(2).ToList();
+
+                <div class="employer-guide-grid">
+
+                    <a href="@Url.Action("Details", "EmployerServices", new { id = mainArticle.ArticleID })"
+                       class="employer-guide-main-card">
+
+                        @if (!string.IsNullOrEmpty(mainArticle.Thumbnail))
+                        {
+                            <img src="@Url.Content(mainArticle.Thumbnail)"
+                                 alt="@mainArticle.Title" />
+                        }
+                        else
+                        {
+                            <div class="employer-guide-no-image">
+                                <i class="fa fa-newspaper-o"></i>
+                            </div>
+                        }
+
+                        <div>
+                            <span>
+                                @(string.IsNullOrEmpty(mainArticle.Category)
+                                ? "Recruitment Guide"
+                                : mainArticle.Category)
+                            </span>
+
+                            <h3>@mainArticle.Title</h3>
+                        </div>
+
+                    </a>
+
+                    <div class="employer-guide-side">
+
+                        @foreach (var article in sideArticles)
+                        {
+                            <a href="@Url.Action("Details", "EmployerServices", new { id = article.ArticleID })"
+                               class="employer-guide-small-card">
+
+                                <h4>@article.Title</h4>
+
+                            </a>
+                        }
+
+                    </div>
+
+                </div>
+            }
+            else
+            {
+                <div class="employer-guide-empty">
+                    No employer recruitment articles yet. Admin can add articles and choose
+                    <strong>Display For: Employer Page</strong>.
+                </div>
+            }
+
+        </div>
+    </section>
+    <!-- SLIDE 6: LIÊN HỆ -->
+    <section class="employer-contact-section">
+        <div class="container">
+
+            <div class="employer-section-title">
+                <span>Contact</span>
+                <h2>Contact JobFind support</h2>
+                <p>
+                    Employers can contact JobFind for recruitment support,
+                    account guidance, and service information.
+                </p>
+            </div>
+
+            <div class="employer-contact-grid">
+
+                <div class="employer-contact-card">
+                    <h3>Hồ Chí Minh</h3>
+                    <p><i class="fa fa-map-marker"></i> 270 - 272 Cộng Hòa, Tân Bình, TP. Hồ Chí Minh</p>
+                    <p><i class="fa fa-phone"></i> 028 3813 0501</p>
+                    <p><i class="fa fa-envelope"></i> support@jobfind.vn</p>
+                </div>
+
+                <div class="employer-contact-card">
+                    <h3>Hà Nội</h3>
+                    <p><i class="fa fa-map-marker"></i> 535 Kim Mã, Ba Đình, Hà Nội</p>
+                    <p><i class="fa fa-phone"></i> 024 3519 0410</p>
+                    <p><i class="fa fa-envelope"></i> hanoi@jobfind.vn</p>
+                </div>
+
+                <div class="employer-contact-card">
+                    <h3>Đà Nẵng</h3>
+                    <p><i class="fa fa-map-marker"></i> Bạch Đằng, Hải Châu, Đà Nẵng</p>
+                    <p><i class="fa fa-phone"></i> 0236 3221 767</p>
+                    <p><i class="fa fa-envelope"></i> danang@jobfind.vn</p>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+</main>

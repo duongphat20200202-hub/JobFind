@@ -1,0 +1,87 @@
+﻿@{
+    ViewBag.Title = "Candidate Registration";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="auth-register-page">
+
+    <div class="register-card candidate-card">
+
+        <div class="register-header">
+            <div class="register-icon candidate">
+                <i class="fa fa-user"></i>
+            </div>
+
+            <div>
+                <h1>Candidate Registration</h1>
+                <p>Create an account to find jobs, save favorite jobs, and apply quickly.</p>
+            </div>
+        </div>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="auth-alert">
+                @ViewBag.Error
+            </div>
+        }
+
+        <form method="post" action="@Url.Action("RegisterCandidate", "Account")" class="register-form">
+
+            <div class="form-section-title">
+                <h2>Account Information</h2>
+            </div>
+
+            <div class="form-grid">
+                <div class="auth-field">
+                    <label>Username</label>
+                    <input type="text" name="userName" placeholder="Example: johndoe" />
+                </div>
+
+                <div class="auth-field">
+                    <label>Email</label>
+                    <input type="email" name="email" placeholder="Enter your email" />
+                </div>
+
+                <div class="auth-field">
+                    <label>Password</label>
+                    <input type="password" name="password" placeholder="Enter password" />
+                </div>
+
+                <div class="auth-field">
+                    <label>Confirm Password</label>
+                    <input type="password" name="confirmPassword" placeholder="Confirm password" />
+                </div>
+            </div>
+
+            <div class="form-section-title">
+                <h2>Personal Information</h2>
+            </div>
+
+            <div class="form-grid">
+                <div class="auth-field">
+                    <label>Full Name</label>
+                    <input type="text" name="fullName" placeholder="Enter your full name" />
+                </div>
+
+                <div class="auth-field">
+                    <label>Phone Number</label>
+                    <input type="text" name="phone" placeholder="Enter your phone number" />
+                </div>
+            </div>
+
+            <button type="submit" class="register-submit candidate">
+                Register as Candidate
+            </button>
+
+        </form>
+
+        <div class="register-bottom">
+            <span>Already have an account?</span>
+            <a href="@Url.Action("Login", "Account", new { role = "Candidate" })">
+                Login
+            </a>
+        </div>
+
+    </div>
+
+</div>

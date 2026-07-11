@@ -1,0 +1,536 @@
+﻿@model BasicProject.Models.HomeViewModel
+
+@{
+    ViewBag.Title = "Home";
+}
+
+<main class="home-page">
+
+    <!-- SLIDE 1: Banner -->
+    <section class="banner">
+
+        <div id="bannerCarousel" class="carousel slide" data-bs-ride="carousel">
+
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="0" class="active"></button>
+                <button type="button" data-bs-target="#bannerCarousel" data-bs-slide-to="1"></button>
+            </div>
+
+            <div class="carousel-inner">
+
+                <div class="carousel-item active">
+                    <img src="@Url.Content("~/Content/images/banner01.jpg")" class="banner-img">
+                </div>
+
+                <div class="carousel-item">
+                    <img src="@Url.Content("~/Content/images/banner02.jpg")" class="banner-img">
+                </div>
+
+            </div>
+
+            <button class="carousel-control-prev"
+                    type="button"
+                    data-bs-target="#bannerCarousel"
+                    data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+
+            <button class="carousel-control-next"
+                    type="button"
+                    data-bs-target="#bannerCarousel"
+                    data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
+
+        </div>
+
+        <div class="row">
+            <div class="col-2">
+                <h1>Million of jobs<br>for you.</h1>
+                <h2>Verified by us</h2>
+
+                <p>
+                    Here you can find your best job.
+                    Explore million of jobs with us.
+                    <br>
+                    Join with us and find your best dream job.
+                </p>
+            </div>
+        </div>
+
+        <div class="search">
+            <form class="search-box" method="get" action="@Url.Action("Index", "Jobs")">
+
+                <div class="search-input">
+                    <i class="fa fa-search"></i>
+                    <input type="text" name="keyword" placeholder="Enter job title or category..." />
+                </div>
+
+                <button class="search-btn" type="submit">
+                    Search
+                </button>
+
+            </form>
+        </div>
+
+    </section>
+
+    <!-- SLIDE 2: Available Jobs -->
+    <section class="featured-jobs-section">
+        <div class="container">
+
+            <div class="section-header">
+                <h2>Available Jobs</h2>
+
+                <a href="@Url.Action("Index", "Jobs")" class="view-all-link">
+                    View All <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+
+            <div class="job-scroll-wrap">
+                <div class="job-scroll home-slider-track" id="homeJobsTrack">
+
+                    @foreach (var job in Model.Jobs)
+                    {
+                        <a href="@Url.Action("Details", "Jobs", new { id = job.JobID })"
+                           class="home-job-card">
+
+                            <div class="job-hot-label">
+                                <i class="fa fa-fire"></i> HOT
+                            </div>
+
+                            <div class="home-job-logo">
+                                @if (job.Company != null && !string.IsNullOrEmpty(job.Company.Logo))
+                                {
+                                    <img src="@Url.Content(job.Company.Logo)" alt="@job.Company.CompanyName" />
+                                }
+                                else
+                                {
+                                    <span>
+                                        @(job.Company != null && !string.IsNullOrEmpty(job.Company.CompanyName)
+                                            ? job.Company.CompanyName.Substring(0, 1)
+                                            : "J")
+                                    </span>
+                                }
+                            </div>
+
+                            <div class="home-job-info">
+                                <h3>@job.Title</h3>
+
+                                <p>
+                                    @(job.Company != null ? job.Company.CompanyName : "Updating")
+                                </p>
+
+                                <span>
+                                    <i class="fa fa-map-marker"></i>
+                                    @(string.IsNullOrEmpty(job.Location) ? "Updating" : job.Location)
+                                </span>
+
+                                <strong>
+                                    @(job.Salary.HasValue
+                                        ? job.Salary.Value.ToString("N0") + " USD"
+                                        : "Negotiable")
+                                </strong>
+                            </div>
+
+                        </a>
+                    }
+
+                </div>
+
+                <div class="home-slider-indicators" data-target="homeJobsTrack"></div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- SLIDE 3: Featured Categories -->
+    <section class="featured-categories-section">
+        <div class="container">
+
+            <div class="section-header">
+                <h2>Featured Categories</h2>
+                <a href="@Url.Action("Index", "Categories")" class="view-all-link">View All</a>
+            </div>
+
+            <div class="category-scroll-wrap">
+                <div class="category-scroll home-slider-track" id="homeCategoriesTrack">
+
+                    @foreach (var category in Model.Categories)
+                    {
+                        var iconClass = "fa-briefcase";
+
+                        switch (category.CategoryName)
+                        {
+                            case "Information Technology":
+                                iconClass = "fa-laptop";
+                                break;
+
+                            case "Marketing":
+                                iconClass = "fa-bullhorn";
+                                break;
+
+                            case "Accounting":
+                                iconClass = "fa-calculator";
+                                break;
+
+                            case "Business":
+                                iconClass = "fa-line-chart";
+                                break;
+
+                            case "Sales":
+                                iconClass = "fa-shopping-cart";
+                                break;
+
+                            case "Human Resources":
+                                iconClass = "fa-users";
+                                break;
+
+                            case "Finance":
+                                iconClass = "fa-money";
+                                break;
+
+                            case "Design":
+                                iconClass = "fa-paint-brush";
+                                break;
+
+                            case "Customer Service":
+                                iconClass = "fa-headphones";
+                                break;
+
+                            case "Education":
+                                iconClass = "fa-graduation-cap";
+                                break;
+
+                            default:
+                                iconClass = "fa-briefcase";
+                                break;
+                        }
+
+                        <a href="@Url.Action("Index", "Jobs", new { categoryId = category.CategoryID })"
+                           class="category-card">
+                            <div class="category-icon">
+                                <i class="fa @iconClass"></i>
+                            </div>
+
+                            <h3>@category.CategoryName</h3>
+                            <p>Hiring Now</p>
+                        </a>
+                    }
+
+                </div>
+
+                <div class="home-slider-indicators" data-target="homeCategoriesTrack"></div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- SLIDE 4: Top Employers -->
+    <section class="section section-company">
+        <div class="container">
+
+            <div class="section-title">
+                <h2>Top Employers</h2>
+
+                <a href="@Url.Action("Index", "Employers")" class="view-all-link">
+                    View All <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+
+            <div class="company-slider-wrap">
+                <div class="company-grid home-slider-track" id="homeCompaniesTrack">
+
+                    @foreach (var company in Model.Companies)
+                    {
+                        <div class="company-grid-item">
+
+                            <a href="@Url.Action("Details", "Employers", new { id = company.CompanyID })" class="company-link">
+
+                                <div class="company-card">
+
+                                    <div class="company-banner"
+                                         style="background-image: url('@Url.Action("Banner", "EmployerCompany", new { id = company.CompanyID })');">
+                                    </div>
+
+                                    <div class="company-logo">
+                                        @if (!string.IsNullOrEmpty(company.Logo))
+                                        {
+                                            <img src="@Url.Content(company.Logo)" alt="@company.CompanyName" />
+                                        }
+                                        else
+                                        {
+                                            <span>
+                                                @(company.CompanyName != null ? company.CompanyName.Substring(0, 1) : "C")
+                                            </span>
+                                        }
+                                    </div>
+
+                                    <div class="company-info">
+                                        <h3 title="@company.CompanyName">
+                                            @company.CompanyName
+                                        </h3>
+
+                                        <strong>Hiring Now</strong>
+
+                                        <div class="company-location">
+                                            <i class="fa fa-map-marker"></i>
+                                            @(string.IsNullOrEmpty(company.Location) ? "Updating" : company.Location)
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </a>
+
+                        </div>
+                    }
+
+                </div>
+
+                <div class="home-slider-indicators" data-target="homeCompaniesTrack"></div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- SLIDE 5: CV Banner -->
+    <section class="home-cv-banner-image-section">
+        <div class="container">
+
+            <a href="@Url.Action("Index", "CVTemplates")" class="home-cv-banner-image-link">
+                <img src="@Url.Content("~/Content/images/cv-banner.jpg")" alt="CV Templates" />
+            </a>
+
+        </div>
+    </section>
+
+    <!-- SLIDE 6: Career Tips -->
+    <section class="home-articles-section">
+        <div class="container">
+
+            <div class="section-title">
+                <h2>Career Tips</h2>
+
+                <a href="@Url.Action("Index", "CareerTips")" class="view-all-link">
+                    View All <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+
+            @if (Model.Articles != null && Model.Articles.Any())
+            {
+                <div class="home-article-wrap">
+                    <div class="home-article-slider home-slider-track" id="homeArticlesTrack">
+
+                        @foreach (var article in Model.Articles)
+                        {
+                            <a href="@Url.Action("Details", "CareerTips", new { id = article.ArticleID })"
+                               class="home-article-card">
+
+                                <div class="home-article-image">
+                                    @if (!string.IsNullOrEmpty(article.Thumbnail))
+                                    {
+                                        <img src="@Url.Content(article.Thumbnail)" alt="@article.Title" />
+                                    }
+                                    else
+                                    {
+                                        <div class="home-article-no-image">
+                                            <i class="fa fa-newspaper-o"></i>
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="home-article-info">
+                                    <span>
+                                        @(string.IsNullOrEmpty(article.Category)
+                ? "Career Tips"
+                : article.Category)
+                                    </span>
+
+                                    <h3>@article.Title</h3>
+                                </div>
+
+                            </a>
+                        }
+
+                    </div>
+
+                    <div class="home-slider-indicators" data-target="homeArticlesTrack"></div>
+                </div>
+            }
+            else
+            {
+                <div class="article-empty-box">
+                    No career guide articles yet. Admin can add articles from the admin dashboard.
+                </div>
+            }
+
+        </div>
+    </section>
+
+</main>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var tracks = document.querySelectorAll(".home-slider-track");
+
+        tracks.forEach(function (track) {
+            var indicatorBox = document.querySelector('.home-slider-indicators[data-target="' + track.id + '"]');
+
+            if (!indicatorBox) {
+                return;
+            }
+
+            var autoTimer = null;
+
+            function getMaxScroll() {
+                return Math.max(0, track.scrollWidth - track.clientWidth);
+            }
+
+            function getPageCount() {
+                var maxScroll = getMaxScroll();
+
+                if (maxScroll <= 5) {
+                    return 1;
+                }
+
+                return Math.ceil(track.scrollWidth / track.clientWidth);
+            }
+
+            function getCurrentPage() {
+                var pageCount = getPageCount();
+                var maxScroll = getMaxScroll();
+
+                if (pageCount <= 1 || track.clientWidth <= 0) {
+                    return 0;
+                }
+
+                if (track.scrollLeft >= maxScroll - 5) {
+                    return pageCount - 1;
+                }
+
+                return Math.round(track.scrollLeft / track.clientWidth);
+            }
+
+            function goToPage(pageIndex) {
+                var pageCount = getPageCount();
+                var maxScroll = getMaxScroll();
+
+                if (pageIndex < 0) {
+                    pageIndex = 0;
+                }
+
+                if (pageIndex >= pageCount) {
+                    pageIndex = pageCount - 1;
+                }
+
+                var targetLeft = pageIndex * track.clientWidth;
+
+                if (targetLeft > maxScroll) {
+                    targetLeft = maxScroll;
+                }
+
+                track.scrollTo({
+                    left: targetLeft,
+                    behavior: "smooth"
+                });
+            }
+
+            function setActiveIndicator() {
+                var buttons = indicatorBox.querySelectorAll("button");
+                var currentPage = getCurrentPage();
+
+                buttons.forEach(function (button, index) {
+                    button.classList.toggle("active", index === currentPage);
+                });
+            }
+
+            function buildIndicators() {
+                indicatorBox.innerHTML = "";
+
+                var pageCount = getPageCount();
+
+                if (pageCount <= 1) {
+                    indicatorBox.style.display = "none";
+                    return;
+                }
+
+                indicatorBox.style.display = "flex";
+
+                for (var i = 0; i < pageCount; i++) {
+                    var button = document.createElement("button");
+                    button.type = "button";
+                    button.setAttribute("aria-label", "Go to slide " + (i + 1));
+
+                    (function (pageIndex) {
+                        button.addEventListener("click", function () {
+                            goToPage(pageIndex);
+                            restartAuto();
+                        });
+                    })(i);
+
+                    indicatorBox.appendChild(button);
+                }
+
+                setActiveIndicator();
+            }
+
+            function nextPage() {
+                var pageCount = getPageCount();
+
+                if (pageCount <= 1) {
+                    return;
+                }
+
+                var currentPage = getCurrentPage();
+                var next = currentPage + 1;
+
+                if (next >= pageCount) {
+                    next = 0;
+                }
+
+                goToPage(next);
+            }
+
+            function startAuto() {
+                stopAuto();
+
+                if (getPageCount() <= 1) {
+                    return;
+                }
+
+                autoTimer = setInterval(function () {
+                    nextPage();
+                }, 4500);
+            }
+
+            function stopAuto() {
+                if (autoTimer) {
+                    clearInterval(autoTimer);
+                    autoTimer = null;
+                }
+            }
+
+            function restartAuto() {
+                stopAuto();
+                startAuto();
+            }
+
+            track.addEventListener("scroll", function () {
+                window.requestAnimationFrame(setActiveIndicator);
+            });
+
+            track.addEventListener("mouseenter", stopAuto);
+            track.addEventListener("mouseleave", startAuto);
+
+            window.addEventListener("resize", function () {
+                buildIndicators();
+                setActiveIndicator();
+                restartAuto();
+            });
+
+            buildIndicators();
+            startAuto();
+        });
+    });
+</script>

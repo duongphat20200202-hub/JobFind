@@ -1,0 +1,308 @@
+﻿/* =========================================================
+   ADMIN DASHBOARD V2 - CHỈ DÙNG CHO DASHBOARD
+========================================================= */
+
+.admin-dashboard-v2 {
+    width: 100%;
+}
+
+.admin-kpi-compact-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.admin-kpi-compact-card {
+    height: 96px;
+    background: #edf5ff;
+    border: 1px solid #d8e5ff;
+    border-radius: 16px;
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14);
+}
+
+.admin-kpi-compact-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+    .admin-kpi-compact-icon.blue {
+        background: #e8f3ff;
+        color: #0d6efd;
+    }
+
+    .admin-kpi-compact-icon.orange {
+        background: #fff3cd;
+        color: #ff9800;
+    }
+
+    .admin-kpi-compact-icon.purple {
+        background: #f3e8ff;
+        color: #7e22ce;
+    }
+
+    .admin-kpi-compact-icon.green {
+        background: #dcfce7;
+        color: #16a34a;
+    }
+
+.admin-kpi-compact-card span {
+    display: block;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 850;
+    margin-bottom: 5px;
+}
+
+.admin-kpi-compact-card strong {
+    color: #001f5b;
+    font-size: 34px;
+    line-height: 1;
+    font-weight: 950;
+}
+
+.admin-dashboard-chart-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 0.8fr 0.8fr;
+    gap: 16px;
+    align-items: stretch;
+}
+
+.admin-chart-card,
+.admin-control-card {
+    background: #ffffff;
+    border: 1px solid #d7e4ff;
+    border-radius: 16px;
+    padding: 18px;
+    color: #1f2937;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+    min-width: 0;
+}
+
+.admin-chart-large {
+    grid-column: span 2;
+}
+
+.admin-chart-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 10px;
+}
+
+    .admin-chart-card-head h2 {
+        margin: 0 0 4px;
+        color: #001f5b;
+        font-size: 21px;
+        font-weight: 950;
+    }
+
+    .admin-chart-card-head p {
+        margin: 0;
+        color: #64748b;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+.admin-chart-wrap {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+}
+
+.trend-chart-height {
+    height: 245px;
+}
+
+.donut-chart-height {
+    height: 245px;
+}
+
+.small-chart-height {
+    height: 230px;
+}
+
+/* Chỉ dashboard dùng switch này */
+.admin-dashboard-v2 .chart-period-switch {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+}
+
+    .admin-dashboard-v2 .chart-period-switch button {
+        height: 32px;
+        padding: 0 12px;
+        border: 1px solid #d7e4ff;
+        border-radius: 9px;
+        background: #f8fbff;
+        color: #0d6efd;
+        font-size: 12px;
+        font-weight: 900;
+        cursor: pointer;
+    }
+
+        .admin-dashboard-v2 .chart-period-switch button.active,
+        .admin-dashboard-v2 .chart-period-switch button:hover {
+            background: #0d6efd;
+            border-color: #0d6efd;
+            color: #ffffff;
+        }
+
+.admin-control-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.admin-control-section {
+    background: #edf5ff;
+    border: 1px solid #d8e5ff;
+    border-radius: 14px;
+    padding: 15px;
+}
+
+    .admin-control-section h2 {
+        margin: 0 0 12px;
+        color: #001f5b;
+        font-size: 19px;
+        font-weight: 950;
+    }
+
+.admin-review-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 9px;
+}
+
+    .admin-review-grid a {
+        min-height: 48px;
+        padding: 0 13px;
+        border-radius: 12px;
+        background: #ffffff;
+        border: 1px solid #d7e4ff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: #001f5b;
+        text-decoration: none;
+        font-weight: 850;
+    }
+
+        .admin-review-grid a:hover {
+            background: #eef4ff;
+            color: #0d6efd;
+            text-decoration: none;
+        }
+
+    .admin-review-grid span {
+        color: #64748b;
+        font-size: 13px;
+    }
+
+    .admin-review-grid strong {
+        color: #0d6efd;
+        font-size: 22px;
+        font-weight: 950;
+    }
+
+.admin-expiry-alert {
+    background: #ffffff;
+    border: 1px solid #d7e4ff;
+    border-radius: 12px;
+    padding: 14px;
+}
+
+    .admin-expiry-alert span {
+        display: block;
+        color: #64748b;
+        font-size: 13px;
+        font-weight: 800;
+        margin-bottom: 5px;
+    }
+
+    .admin-expiry-alert strong {
+        display: block;
+        color: #ff9800;
+        font-size: 34px;
+        line-height: 1;
+        font-weight: 950;
+        margin-bottom: 12px;
+    }
+
+    .admin-expiry-alert a {
+        height: 36px;
+        border-radius: 9px;
+        background: #fff3cd;
+        color: #b45309;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        font-weight: 950;
+        text-decoration: none;
+    }
+
+        .admin-expiry-alert a:hover {
+            background: #ff9800;
+            color: #111111;
+            text-decoration: none;
+        }
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .admin-kpi-compact-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .admin-dashboard-chart-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .admin-chart-large {
+        grid-column: span 2;
+    }
+
+    .admin-control-card {
+        grid-column: span 2;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-kpi-compact-grid,
+    .admin-dashboard-chart-grid,
+    .admin-control-card {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-chart-large,
+    .admin-control-card {
+        grid-column: span 1;
+    }
+
+    .admin-kpi-compact-card {
+        height: auto;
+        min-height: 92px;
+    }
+
+    .admin-chart-card-head {
+        flex-direction: column;
+    }
+
+    .trend-chart-height,
+    .donut-chart-height,
+    .small-chart-height {
+        height: 250px;
+    }
+}

@@ -1,0 +1,108 @@
+﻿@model BasicProject.Models.ArticleJson
+@using BasicProject.Models
+
+@{
+    ViewBag.Title = Model.Title;
+    Layout = "~/Views/Shared/_EmployerPublicLayout.cshtml";
+
+    var relatedArticles = ViewBag.RelatedArticles as List<ArticleJson>;
+}
+
+<main class="employer-article-detail-page">
+
+    <section class="employer-article-detail-section">
+        <div class="container">
+
+            <a href="@Url.Action("Index", "EmployerServices")" class="employer-article-back">
+                <i class="fa fa-angle-left"></i>
+                Back to Employer Services
+            </a>
+
+            <div class="employer-article-detail-layout">
+
+                <article class="employer-article-detail-card">
+
+                    <div class="employer-article-detail-head">
+                        <span>
+                            @(string.IsNullOrEmpty(Model.Category) ? "Recruitment Guide" : Model.Category)
+                        </span>
+
+                        <h1>@Model.Title</h1>
+
+                        <p>
+                            <i class="fa fa-calendar"></i>
+                            @Model.CreatedAt.ToString("dd/MM/yyyy")
+                            &nbsp;&nbsp;
+                            <i class="fa fa-user"></i>
+                            @(string.IsNullOrEmpty(Model.AuthorName) ? "JobFind Admin" : Model.AuthorName)
+                        </p>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Thumbnail))
+                    {
+                        <div class="employer-article-detail-image">
+                            <img src="@Url.Content(Model.Thumbnail)" alt="@Model.Title" />
+                        </div>
+                    }
+
+                    <div class="employer-article-detail-content">
+                        @Html.Raw(Model.Content)
+                    </div>
+
+                </article>
+
+                <aside class="employer-article-sidebar">
+
+                    <div class="employer-article-side-box">
+                        <h3>Recruitment Support</h3>
+
+                        <a href="@Url.Action("Login", "Account", new { role = "Employer" })">
+                            <i class="fa fa-sign-in"></i>
+                            Employer Login
+                        </a>
+
+                        <a href="@Url.Action("Register", "Account", new { role = "Employer" })">
+                            <i class="fa fa-building"></i>
+                            Create Employer Account
+                        </a>
+
+                        <a href="@Url.Action("Index", "EmployerServices")">
+                            <i class="fa fa-briefcase"></i>
+                            Recruitment Services
+                        </a>
+                    </div>
+
+                    @if (relatedArticles != null && relatedArticles.Any())
+                    {
+                        <div class="employer-article-side-box">
+                            <h3>Related Guides</h3>
+
+                            @foreach (var item in relatedArticles)
+                            {
+                                <a href="@Url.Action("Details", "EmployerServices", new { id = item.ArticleID })"
+                                   class="employer-related-article">
+                                    @if (!string.IsNullOrEmpty(item.Thumbnail))
+                                    {
+                                        <img src="@Url.Content(item.Thumbnail)" alt="@item.Title" />
+                                    }
+                                    else
+                                    {
+                                        <span class="employer-related-no-image">
+                                            <i class="fa fa-newspaper-o"></i>
+                                        </span>
+                                    }
+
+                                    <strong>@item.Title</strong>
+                                </a>
+                            }
+                        </div>
+                    }
+
+                </aside>
+
+            </div>
+
+        </div>
+    </section>
+
+</main>

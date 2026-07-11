@@ -1,0 +1,206 @@
+﻿@model BasicProject.Models.User
+
+@{
+    ViewBag.Title = "Account Details";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    var candidate = ViewBag.Candidate as BasicProject.Models.Candidate;
+    var employer = ViewBag.Employer as BasicProject.Models.Employer;
+    var staff = ViewBag.Staff as BasicProject.Models.Staff;
+}
+
+<div class="admin-page-head">
+    <a href="@Url.Action("Index", "AdminUsers")" class="admin-back-btn">
+        Back
+    </a>
+</div>
+
+<div class="admin-detail-card">
+
+    <div class="admin-user-detail-head">
+
+        <div class="admin-user-avatar">
+            <i class="fa fa-user"></i>
+        </div>
+
+        <div>
+            <h2>@Model.UserName</h2>
+
+            <p>@Model.Email</p>
+
+            @if (Model.Role == "Admin")
+            {
+                <span class="role-badge admin">Admin</span>
+            }
+            else if (Model.Role == "Employer")
+            {
+                <span class="role-badge employer">Employer</span>
+            }
+            else
+            {
+                <span class="role-badge candidate">Candidate</span>
+            }
+
+            @if (Model.IsActive)
+            {
+                <span class="status-active">Active</span>
+            }
+            else
+            {
+                <span class="status-rejected">Locked</span>
+            }
+        </div>
+
+    </div>
+
+    <div class="admin-detail-grid">
+
+        <div class="admin-detail-item">
+            <label>UserID</label>
+            <p>@Model.UserID</p>
+        </div>
+
+        <div class="admin-detail-item">
+            <label>Username</label>
+            <p>@Model.UserName</p>
+        </div>
+
+        <div class="admin-detail-item">
+            <label>Email</label>
+            <p>@Model.Email</p>
+        </div>
+
+        <div class="admin-detail-item">
+            <label>Role</label>
+            <p>@Model.Role</p>
+        </div>
+
+        <div class="admin-detail-item">
+            <label>Status</label>
+            <p>@(Model.IsActive ? "Active" : "Locked")</p>
+        </div>
+
+        <div class="admin-detail-item">
+            <label>Created Date</label>
+            <p>@(Model.CreatedAt.HasValue ? Model.CreatedAt.Value.ToString("dd/MM/yyyy HH:mm") : "Not available")</p>
+        </div>
+
+    </div>
+
+    @if (candidate != null)
+    {
+        <div class="admin-sub-section">
+            <h3>Candidate Information</h3>
+
+            <div class="admin-detail-grid">
+                <div class="admin-detail-item">
+                    <label>Full Name</label>
+                    <p>@(string.IsNullOrEmpty(candidate.FullName) ? "Not updated" : candidate.FullName)</p>
+                </div>
+
+                <div class="admin-detail-item">
+                    <label>Phone Number</label>
+                    <p>@(string.IsNullOrEmpty(candidate.Phone) ? "Not updated" : candidate.Phone)</p>
+                </div>
+
+                <div class="admin-detail-item">
+                    <label>Gender</label>
+                    <p>@(string.IsNullOrEmpty(candidate.Gender) ? "Not updated" : candidate.Gender)</p>
+                </div>
+
+                <div class="admin-detail-item">
+                    <label>Address</label>
+                    <p>@(string.IsNullOrEmpty(candidate.Address) ? "Not updated" : candidate.Address)</p>
+                </div>
+
+                <div class="admin-detail-item full">
+                    <label>Skills</label>
+                    <p>@(string.IsNullOrEmpty(candidate.Skills) ? "Not updated" : candidate.Skills)</p>
+                </div>
+
+                <div class="admin-detail-item full">
+                    <label>Experience</label>
+                    <p>@(string.IsNullOrEmpty(candidate.Experience) ? "Not updated" : candidate.Experience)</p>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (employer != null)
+    {
+        <div class="admin-sub-section">
+            <h3>Employer Information</h3>
+
+            <div class="admin-detail-grid">
+                <div class="admin-detail-item">
+                    <label>Full Name</label>
+                    <p>@(string.IsNullOrEmpty(employer.FullName) ? "Not updated" : employer.FullName)</p>
+                </div>
+
+                <div class="admin-detail-item">
+                    <label>Phone Number</label>
+                    <p>@(string.IsNullOrEmpty(employer.Phone) ? "Not updated" : employer.Phone)</p>
+                </div>
+
+                <div class="admin-detail-item">
+                    <label>Position</label>
+                    <p>@(string.IsNullOrEmpty(employer.Position) ? "Not updated" : employer.Position)</p>
+                </div>
+
+                <div class="admin-detail-item">
+                    <label>CompanyID</label>
+                    <p>@employer.CompanyID</p>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (staff != null)
+    {
+        <div class="admin-sub-section">
+            <h3>Admin / Staff Information</h3>
+
+            <div class="admin-detail-grid">
+                <div class="admin-detail-item">
+                    <label>Full Name</label>
+                    <p>@(string.IsNullOrEmpty(staff.FullName) ? "Not updated" : staff.FullName)</p>
+                </div>
+
+                <div class="admin-detail-item">
+                    <label>Phone Number</label>
+                    <p>@(string.IsNullOrEmpty(staff.Phone) ? "Not updated" : staff.Phone)</p>
+                </div>
+
+                <div class="admin-detail-item">
+                    <label>Position</label>
+                    <p>@(string.IsNullOrEmpty(staff.Position) ? "Not updated" : staff.Position)</p>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="admin-detail-actions">
+
+        @if (Model.IsActive)
+        {
+            <form method="post"
+                  action="@Url.Action("Lock", "AdminUsers", new { id = Model.UserID })"
+                  onsubmit="return confirm('Are you sure you want to lock this account?');">
+                <button type="submit" class="admin-delete-btn big">
+                    Lock Account
+                </button>
+            </form>
+        }
+        else
+        {
+            <form method="post"
+                  action="@Url.Action("Unlock", "AdminUsers", new { id = Model.UserID })">
+                <button type="submit" class="admin-approve-btn big">
+                    Unlock Account
+                </button>
+            </form>
+        }
+
+    </div>
+
+</div>

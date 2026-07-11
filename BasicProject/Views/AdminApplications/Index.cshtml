@@ -1,0 +1,177 @@
+﻿@model IEnumerable<BasicProject.Models.Application>
+
+@{
+    ViewBag.Title = "Applications";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    string currentStatus = ViewBag.CurrentStatus as string;
+    string keyword = ViewBag.Keyword as string;
+    string fromDate = ViewBag.FromDate as string;
+    string toDate = ViewBag.ToDate as string;
+}
+
+@section styles {
+    <link rel="stylesheet" href="@Url.Content("~/Content/AdminApplications.css?v=1001")" />
+}
+
+<div class="admin-application-page">
+
+    <form method="get" action="@Url.Action("Index", "AdminApplications")" class="admin-application-filter-bar">
+
+        <div class="admin-application-search">
+            <i class="fa fa-search"></i>
+            <input type="text"
+                   name="keyword"
+                   value="@keyword"
+                   placeholder="Search candidate, job title, company..." />
+        </div>
+
+        <div class="admin-application-select">
+            <select name="status">
+                <option value="">All Status</option>
+                <option value="Pending" @(currentStatus == "Pending" ? "selected" : "")>Pending</option>
+                <option value="Accepted" @(currentStatus == "Accepted" ? "selected" : "")>Accepted</option>
+                <option value="Rejected" @(currentStatus == "Rejected" ? "selected" : "")>Rejected</option>
+            </select>
+        </div>
+
+        <div class="admin-application-date">
+            <input type="date" name="fromDate" value="@fromDate" />
+        </div>
+
+        <div class="admin-application-date">
+            <input type="date" name="toDate" value="@toDate" />
+        </div>
+
+        <button type="submit" class="admin-application-filter-btn">
+            <i class="fa fa-filter"></i>
+            Filter
+        </button>
+
+        <a href="@Url.Action("Index", "AdminApplications")" class="admin-application-clear-btn">
+            Clear
+        </a>
+
+    </form>
+
+    <div class="admin-application-card-list">
+
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <div class="admin-application-card">
+
+                    <div class="admin-application-left">
+
+                        <div class="admin-application-avatar">
+                            <i class="fa fa-user"></i>
+                        </div>
+
+                        <div class="admin-application-main-info">
+                            <h3>
+                                @(item.Candidate != null ? item.Candidate.FullName : "Unknown Candidate")
+                            </h3>
+
+                            @if (item.Candidate != null && !string.IsNullOrEmpty(item.Candidate.Phone))
+                            {
+                                <p>
+                                    <i class="fa fa-phone"></i>
+                                    @item.Candidate.Phone
+                                </p>
+                            }
+
+                            <span>
+                                Applied:
+                                @(item.AppliedDate.HasValue ? item.AppliedDate.Value.ToString("dd/MM/yyyy HH:mm") : "N/A")
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <div class="admin-application-center">
+
+                        <div class="admin-application-info-box">
+                            <span>Job Post</span>
+                            <strong>@(item.Job != null ? item.Job.Title : "Unknown Job")</strong>
+
+                            @if (item.Job != null)
+                            {
+                                <small>
+                                    <i class="fa fa-location-dot"></i>
+                                    @(string.IsNullOrEmpty(item.Job.Location) ? "Updating" : item.Job.Location)
+                                </small>
+                            }
+                        </div>
+
+                        <div class="admin-application-info-box">
+                            <span>Company</span>
+                            <strong>
+                                @(item.Job != null && item.Job.Company != null ? item.Job.Company.CompanyName : "Updating")
+                            </strong>
+
+                            <small>
+                                @(item.Job != null && item.Job.Category != null ? item.Job.Category.CategoryName : "Uncategorized")
+                            </small>
+                        </div>
+
+                        <div class="admin-application-info-box">
+                            <span>Status</span>
+
+                            @if (item.Status == "Accepted")
+                            {
+                                <strong class="text-green">Accepted</strong>
+                            }
+                            else if (item.Status == "Rejected")
+                            {
+                                <strong class="text-red">Rejected</strong>
+                            }
+                            else
+                            {
+                                <strong class="text-orange">Pending</strong>
+                            }
+                        </div>
+
+                    </div>
+
+                    <div class="admin-application-actions">
+
+                        @if (item.CV != null && !string.IsNullOrEmpty(item.CV.FilePath))
+                        {
+                            <a href="@Url.Content(item.CV.FilePath)"
+                               target="_blank"
+                               class="admin-application-cv-btn">
+                                <i class="fa fa-file-lines"></i>
+                                Open CV
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="admin-application-no-cv">
+                                No CV
+                            </span>
+                        }
+
+                        <a href="@Url.Action("Details", "AdminApplications", new { id = item.ApplicationID })"
+                           class="admin-application-view-btn">
+                            <i class="fa fa-eye"></i>
+                            View
+                        </a>
+
+                    </div>
+
+                </div>
+            }
+        }
+        else
+        {
+            <div class="admin-empty-box">
+                <i class="fa fa-file-signature"></i>
+                <h3>No applications found</h3>
+                <p>There are no applications matching this filter.</p>
+            </div>
+        }
+
+    </div>
+
+</div>

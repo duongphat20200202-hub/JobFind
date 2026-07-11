@@ -1,0 +1,268 @@
+﻿@{
+    ViewBag.Title = "Add Career Tip";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@if (ViewBag.Error != null)
+{
+    <div class="auth-error">
+        @ViewBag.Error
+    </div>
+}
+
+<form method="post"
+      action="@Url.Action("Create", "AdminCareerTips")"
+      enctype="multipart/form-data"
+      class="admin-article-form">
+
+    <div class="form-group">
+        <label>Career Tip Title</label>
+        <input type="text"
+               name="title"
+               placeholder="Example: Bank Interview Questions and How to Answer Them" />
+    </div>
+
+    <div class="form-group">
+        <label>Show Article For</label>
+        <select name="targetAudience" id="targetAudience" onchange="changeArticleCategories()">
+            <option value="Candidate">Candidate</option>
+            <option value="Employer">Employer</option>
+        </select>
+
+        <small>
+            Choose Candidate to show this article on the candidate Career Tips page.
+            Choose Employer to show it on the employer public page.
+        </small>
+    </div>
+
+    <div class="form-group">
+        <label>Category</label>
+        <select name="category" id="articleCategory">
+            <option value="Career Orientation">Career Orientation</option>
+            <option value="Career Advice">Career Advice</option>
+            <option value="CV / Resume Writing">CV / Resume Writing</option>
+            <option value="Job Interview">Job Interview</option>
+            <option value="Workplace Skills">Workplace Skills</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Thumbnail Image</label>
+
+        <input type="file"
+               name="thumbnailFile"
+               id="thumbnailFile"
+               accept="image/*"
+               onchange="previewImage(this, 'thumbnailPreviewBox', 'thumbnailPreviewImg', 'thumbnailFileName')" />
+
+        <small>Choose a .jpg, .jpeg, .png, or .webp image. The selected thumbnail will be previewed below.</small>
+
+        <div class="admin-image-preview-box" id="thumbnailPreviewBox" style="display:none;">
+            <p>
+                <strong>Selected thumbnail:</strong>
+                <span id="thumbnailFileName"></span>
+            </p>
+
+            <img id="thumbnailPreviewImg" src="#" alt="Thumbnail preview" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Short Summary</label>
+        <textarea name="summary"
+                  placeholder="Short description displayed on the career tip card"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label>Career Tip Content</label>
+
+        <textarea name="content"
+                  id="careerTipContent"
+                  class="article-content-editor"
+                  placeholder="Write normally. When you want to insert an image, choose an image below and click Insert image here."></textarea>
+
+        <small>
+            You can write normally. Simple HTML is also supported, such as &lt;h2&gt;, &lt;p&gt;, &lt;ul&gt;, &lt;li&gt;.
+            To insert an uploaded image into the article, place your cursor in the content and click “Insert image here”.
+        </small>
+    </div>
+
+    <div class="form-group">
+        <label>Images Inside Article</label>
+
+        <div class="admin-content-image-item">
+            <input type="file"
+                   name="contentImage1"
+                   id="contentImage1"
+                   accept="image/*"
+                   onchange="previewImage(this, 'contentImagePreviewBox1', 'contentImagePreviewImg1', 'contentImageFileName1')" />
+
+            <button type="button"
+                    class="admin-insert-image-btn"
+                    onclick="insertImageMarker('[image1]')">
+                Insert image 1 here
+            </button>
+
+            <small>This image will appear where [image1] is inserted in the content.</small>
+
+            <div class="admin-image-preview-box" id="contentImagePreviewBox1" style="display:none;">
+                <p>
+                    <strong>Selected image 1:</strong>
+                    <span id="contentImageFileName1"></span>
+                </p>
+
+                <img id="contentImagePreviewImg1" src="#" alt="Content image 1 preview" />
+            </div>
+        </div>
+
+        <div class="admin-content-image-item">
+            <input type="file"
+                   name="contentImage2"
+                   id="contentImage2"
+                   accept="image/*"
+                   onchange="previewImage(this, 'contentImagePreviewBox2', 'contentImagePreviewImg2', 'contentImageFileName2')" />
+
+            <button type="button"
+                    class="admin-insert-image-btn"
+                    onclick="insertImageMarker('[image2]')">
+                Insert image 2 here
+            </button>
+
+            <small>This image will appear where [image2] is inserted in the content.</small>
+
+            <div class="admin-image-preview-box" id="contentImagePreviewBox2" style="display:none;">
+                <p>
+                    <strong>Selected image 2:</strong>
+                    <span id="contentImageFileName2"></span>
+                </p>
+
+                <img id="contentImagePreviewImg2" src="#" alt="Content image 2 preview" />
+            </div>
+        </div>
+
+        <div class="admin-content-image-item">
+            <input type="file"
+                   name="contentImage3"
+                   id="contentImage3"
+                   accept="image/*"
+                   onchange="previewImage(this, 'contentImagePreviewBox3', 'contentImagePreviewImg3', 'contentImageFileName3')" />
+
+            <button type="button"
+                    class="admin-insert-image-btn"
+                    onclick="insertImageMarker('[image3]')">
+                Insert image 3 here
+            </button>
+
+            <small>This image will appear where [image3] is inserted in the content.</small>
+
+            <div class="admin-image-preview-box" id="contentImagePreviewBox3" style="display:none;">
+                <p>
+                    <strong>Selected image 3:</strong>
+                    <span id="contentImageFileName3"></span>
+                </p>
+
+                <img id="contentImagePreviewImg3" src="#" alt="Content image 3 preview" />
+            </div>
+        </div>
+    </div>
+
+    <div class="form-check">
+        <input type="checkbox" name="isActive" value="true" checked />
+        <label>Show this career tip</label>
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="admin-submit-btn">
+            Save Career Tip
+        </button>
+
+        <a href="@Url.Action("Index", "AdminCareerTips")" class="admin-back-btn">
+            Back
+        </a>
+    </div>
+
+</form>
+
+<script>
+    function previewImage(input, boxId, imageId, fileNameId) {
+        var box = document.getElementById(boxId);
+        var image = document.getElementById(imageId);
+        var fileName = document.getElementById(fileNameId);
+
+        if (!input.files || !input.files[0]) {
+            box.style.display = "none";
+            image.src = "#";
+            fileName.innerText = "";
+            return;
+        }
+
+        var file = input.files[0];
+
+        fileName.innerText = file.name;
+
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            image.src = e.target.result;
+            box.style.display = "block";
+        };
+
+        reader.readAsDataURL(file);
+    }
+
+    function insertImageMarker(marker) {
+        var textarea = document.getElementById("careerTipContent");
+
+        if (!textarea) {
+            return;
+        }
+
+        var start = textarea.selectionStart;
+        var end = textarea.selectionEnd;
+        var text = textarea.value;
+
+        var insertText = "\n\n" + marker + "\n\n";
+
+        textarea.value = text.substring(0, start) + insertText + text.substring(end);
+
+        textarea.focus();
+
+        var newCursorPosition = start + insertText.length;
+        textarea.setSelectionRange(newCursorPosition, newCursorPosition);
+    }
+</script>
+<script>
+    function changeArticleCategories() {
+        var targetAudience = document.getElementById("targetAudience").value;
+        var categorySelect = document.getElementById("articleCategory");
+
+        categorySelect.innerHTML = "";
+
+        var candidateCategories = [
+            "Career Orientation",
+            "Career Advice",
+            "CV / Resume Writing",
+            "Job Interview",
+            "Workplace Skills"
+        ];
+
+        var employerCategories = [
+            "Recruitment Guide",
+            "Job Posting Tips",
+            "Candidate Screening",
+            "Employer Branding",
+            "HR Management"
+        ];
+
+        var categories = targetAudience === "Employer"
+            ? employerCategories
+            : candidateCategories;
+
+        categories.forEach(function (category) {
+            var option = document.createElement("option");
+            option.value = category;
+            option.text = category;
+            categorySelect.appendChild(option);
+        });
+    }
+</script>

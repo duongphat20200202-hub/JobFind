@@ -1,0 +1,80 @@
+﻿@model IEnumerable<BasicProject.Models.Job>
+
+@{
+    ViewBag.Title = "Candidate Applications";
+    Layout = "~/Views/Shared/_EmployerLayout.cshtml";
+}
+
+<div class="employer-app-page">
+
+    <div class="employer-page-head">
+        <div>
+            <h1>Candidate Applications</h1>
+            <p>Select a job to view the list of CVs submitted by candidates.</p>
+        </div>
+    </div>
+
+    <div class="employer-job-list">
+
+        @foreach (var job in Model)
+        {
+            <div class="employer-job-card">
+
+                <div class="employer-job-logo">
+                    @if (job.Company != null && !string.IsNullOrEmpty(job.Company.Logo))
+                    {
+                        <img src="@Url.Content(job.Company.Logo)" alt="@job.Company.CompanyName" />
+                    }
+                    else
+                    {
+                        <span>
+                            @(job.Company != null ? job.Company.CompanyName.Substring(0, 1) : "J")
+                        </span>
+                    }
+                </div>
+
+                <div class="employer-job-info">
+                    <div class="employer-job-title-row">
+                        <h3>@job.Title</h3>
+                        <span class="employer-job-status">@job.Status</span>
+                    </div>
+
+                    <p class="employer-company-name">
+                        @(job.Company != null ? job.Company.CompanyName : "Updating")
+                    </p>
+
+                    <div class="employer-job-meta">
+                        <span>
+                            <i class="fa fa-map-marker"></i>
+                            @(string.IsNullOrEmpty(job.Location) ? "Updating" : job.Location)
+                        </span>
+
+                        @{
+                            var counts = ViewBag.ApplicationCounts as Dictionary<int, int>;
+                            int cvCount = 0;
+
+                            if (counts != null && counts.ContainsKey(job.JobID))
+                            {
+                                cvCount = counts[job.JobID];
+                            }
+                        }
+
+                        <span>
+                            <i class="fa fa-file-text"></i>
+                            @cvCount submitted CVs
+                        </span>
+                    </div>
+                </div>
+
+                <div class="employer-job-actions">
+                    <a href="@Url.Action("ByJob", "EmployerApplications", new { id = job.JobID })" class="btn-view-cv">
+                        <i class="fa fa-file-text"></i> View CVs
+                    </a>
+                </div>
+
+            </div>
+        }
+
+    </div>
+
+</div>

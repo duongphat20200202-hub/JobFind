@@ -1,0 +1,68 @@
+﻿@{
+    ViewBag.Title = "Choose Account Type";
+}
+
+<div class="auth-choice-page">
+
+    <div class="auth-choice-card">
+
+        <div class="auth-choice-header">
+            <h1>Create an Account</h1>
+            <p>Choose the account type that fits your needs.</p>
+        </div>
+
+        <div class="role-choice-grid">
+
+            <a href="@Url.Action("RegisterCandidate", "Account")" class="role-card">
+                <div class="role-icon">
+                    <i class="fa fa-user"></i>
+                </div>
+
+                <h2>Job Candidate</h2>
+
+                <p>
+                    Create your profile, save favorite jobs, and apply for suitable jobs.
+                </p>
+
+                <span>
+                    Register as Candidate
+                    <i class="fa fa-angle-right"></i>
+                </span>
+            </a>
+
+            <a href="@Url.Action("RegisterEmployer", "Account")" class="role-card employer">
+                <div class="role-icon">
+                    <i class="fa fa-building"></i>
+                </div>
+
+                <h2>Employer</h2>
+
+                <p>
+                    Post job openings, manage candidate applications, and update company information.
+                </p>
+
+                <span>
+                    Register as Employer
+                    <i class="fa fa-angle-right"></i>
+                </span>
+            </a>
+
+        </div>
+
+        <div class="auth-choice-bottom">
+            <p>Already have an account?</p>
+
+            <div class="login-choice-links">
+                <a href="@Url.Action("Login", "Account", new { role = "Candidate" })">
+                    Candidate Login
+                </a>
+
+                <a href="@Url.Action("Login", "Account", new { role = "Employer" })">
+                    Employer Login
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+</div>

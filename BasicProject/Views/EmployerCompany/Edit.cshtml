@@ -1,0 +1,317 @@
+﻿@model BasicProject.Models.Company
+
+@{
+    ViewBag.Title = "Company Profile";
+    Layout = "~/Views/Shared/_EmployerLayout.cshtml";
+}
+
+<div class="employer-company-page">
+
+    <div class="employer-page-head">
+        <div>
+            <h1>Company Profile</h1>
+        </div>
+    </div>
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="auth-error">@ViewBag.Error</div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="auth-success">@TempData["Success"]</div>
+    }
+
+    <!-- Main preview similar to company detail page -->
+    <div class="company-edit-preview">
+
+        <div class="company-edit-banner"
+             id="mainBannerPreview"
+             style="background-image: url('@Url.Action("Banner", "EmployerCompany", new { id = Model.CompanyID })');">
+
+            <div class="company-edit-overlay">
+
+                <div class="company-edit-logo">
+                    @if (!string.IsNullOrEmpty(Model.Logo))
+                    {
+                        <img id="mainLogoPreview"
+                             src="@Url.Content(Model.Logo)"
+                             alt="@Model.CompanyName" />
+
+                        <span id="mainLogoText" style="display:none;">
+                            @(Model.CompanyName != null ? Model.CompanyName.Substring(0, 1) : "C")
+                        </span>
+                    }
+                    else
+                    {
+                        <img id="mainLogoPreview"
+                             src=""
+                             alt="@Model.CompanyName"
+                             style="display:none;" />
+
+                        <span id="mainLogoText">
+                            @(Model.CompanyName != null ? Model.CompanyName.Substring(0, 1) : "C")
+                        </span>
+                    }
+                </div>
+
+                <div class="company-edit-info">
+                    <h2>@Model.CompanyName</h2>
+
+                    <p>
+                        <i class="fa fa-map-marker"></i>
+                        @(string.IsNullOrEmpty(Model.Location) ? "Location is being updated" : Model.Location)
+                    </p>
+
+                    <span>
+                        <i class="fa fa-briefcase"></i>
+                        Company Profile
+                    </span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <form method="post"
+          action="@Url.Action("Edit", "EmployerCompany")"
+          enctype="multipart/form-data"
+          class="employer-form company-form">
+
+        <div class="company-media-grid">
+
+            <!-- LOGO -->
+            <div class="company-media-card">
+                <h3>Company Logo</h3>
+
+                <div class="media-logo-preview">
+                    @if (!string.IsNullOrEmpty(Model.Logo))
+                    {
+                        <img id="logoPreview"
+                             src="@Url.Content(Model.Logo)"
+                             alt="@Model.CompanyName" />
+
+                        <span id="logoTextPreview" style="display:none;">
+                            @(Model.CompanyName != null ? Model.CompanyName.Substring(0, 1) : "C")
+                        </span>
+                    }
+                    else
+                    {
+                        <img id="logoPreview"
+                             src=""
+                             alt="@Model.CompanyName"
+                             style="display:none;" />
+
+                        <span id="logoTextPreview">
+                            @(Model.CompanyName != null ? Model.CompanyName.Substring(0, 1) : "C")
+                        </span>
+                    }
+                </div>
+
+                <input type="file"
+                       name="logoFile"
+                       id="logoFile"
+                       accept="image/*" />
+
+                <p>
+                    Use a square image such as 300x300 for the best logo display.
+                    After choosing a file, the preview will appear before saving.
+                </p>
+            </div>
+
+            <!-- BANNER -->
+            <div class="company-media-card">
+                <h3>Company Banner</h3>
+
+                <div class="media-banner-preview"
+                     id="bannerPreview"
+                     style="background-image: url('@Url.Action("Banner", "EmployerCompany", new { id = Model.CompanyID })');">
+                </div>
+
+                <input type="file"
+                       name="bannerFile"
+                       id="bannerFile"
+                       accept="image/*" />
+
+                <p>
+                    Use a horizontal image, for example 1200x400, 1600x500, or any wide layout image.
+                    After choosing a file, the preview will appear before saving.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="form-group">
+            <label>Company Name</label>
+            <input type="text" name="companyName" value="@Model.CompanyName" />
+        </div>
+
+        <div class="form-group">
+            <label>Location</label>
+            <input type="text" name="location" value="@Model.Location" />
+        </div>
+
+        <div class="form-group">
+            <label>Company Size</label>
+            <select name="companySize">
+                <option value="">-- Select company size --</option>
+                <option value="1 - 50 employees" @(Model.CompanySize == "1 - 50 employees" ? "selected" : "")>1 - 50 employees</option>
+                <option value="51 - 200 employees" @(Model.CompanySize == "51 - 200 employees" ? "selected" : "")>51 - 200 employees</option>
+                <option value="201 - 500 employees" @(Model.CompanySize == "201 - 500 employees" ? "selected" : "")>201 - 500 employees</option>
+                <option value="501 - 1000 employees" @(Model.CompanySize == "501 - 1000 employees" ? "selected" : "")>501 - 1000 employees</option>
+                <option value="1000+ employees" @(Model.CompanySize == "1000+ employees" ? "selected" : "")>1000+ employees</option>
+            </select>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Company Email</label>
+                <input type="email" name="email" value="@Model.Email" />
+            </div>
+
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="text" name="phone" value="@Model.Phone" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Website</label>
+            <input type="text" name="website" value="@Model.Website" />
+        </div>
+
+        <div class="form-group">
+            <label>Company Description</label>
+            <textarea name="description">@Model.Description</textarea>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="auth-btn">
+                Save Changes
+            </button>
+        </div>
+
+    </form>
+
+    <div class="company-delete-actions">
+
+        <form method="post" action="@Url.Action("DeleteLogo", "EmployerCompany")">
+            <button type="submit"
+                    class="delete-media-btn"
+                    onclick="return confirm('Are you sure you want to delete the company logo?');">
+                Delete Logo
+            </button>
+        </form>
+
+        <form method="post" action="@Url.Action("DeleteBanner", "EmployerCompany")">
+            <button type="submit"
+                    class="delete-media-btn"
+                    onclick="return confirm('Are you sure you want to delete the company banner?');">
+                Delete Banner
+            </button>
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var logoInput = document.getElementById("logoFile");
+        var bannerInput = document.getElementById("bannerFile");
+
+        if (logoInput) {
+            logoInput.addEventListener("change", function () {
+                previewLogo(this);
+            });
+        }
+
+        if (bannerInput) {
+            bannerInput.addEventListener("change", function () {
+                previewBanner(this);
+            });
+        }
+    });
+
+    function previewLogo(input) {
+        var file = input.files && input.files[0];
+
+        if (!file) {
+            return;
+        }
+
+        if (!file.type.startsWith("image/")) {
+            alert("Please choose an image file.");
+            input.value = "";
+            return;
+        }
+
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            var imageUrl = e.target.result;
+
+            var logoPreview = document.getElementById("logoPreview");
+            var logoTextPreview = document.getElementById("logoTextPreview");
+
+            var mainLogoPreview = document.getElementById("mainLogoPreview");
+            var mainLogoText = document.getElementById("mainLogoText");
+
+            if (logoPreview) {
+                logoPreview.src = imageUrl;
+                logoPreview.style.display = "block";
+            }
+
+            if (logoTextPreview) {
+                logoTextPreview.style.display = "none";
+            }
+
+            if (mainLogoPreview) {
+                mainLogoPreview.src = imageUrl;
+                mainLogoPreview.style.display = "block";
+            }
+
+            if (mainLogoText) {
+                mainLogoText.style.display = "none";
+            }
+        };
+
+        reader.readAsDataURL(file);
+    }
+
+    function previewBanner(input) {
+        var file = input.files && input.files[0];
+
+        if (!file) {
+            return;
+        }
+
+        if (!file.type.startsWith("image/")) {
+            alert("Please choose an image file.");
+            input.value = "";
+            return;
+        }
+
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            var imageUrl = e.target.result;
+
+            var bannerPreview = document.getElementById("bannerPreview");
+            var mainBannerPreview = document.getElementById("mainBannerPreview");
+
+            if (bannerPreview) {
+                bannerPreview.style.backgroundImage = "url('" + imageUrl + "')";
+            }
+
+            if (mainBannerPreview) {
+                mainBannerPreview.style.backgroundImage = "url('" + imageUrl + "')";
+            }
+        };
+
+        reader.readAsDataURL(file);
+    }
+</script>

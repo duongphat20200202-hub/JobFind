@@ -1,0 +1,257 @@
+﻿@model IEnumerable<BasicProject.Models.Company>
+
+@{
+    ViewBag.Title = "Top Employers";
+
+    string currentKeyword = ViewBag.Keyword as string;
+    string currentLocation = ViewBag.Location as string;
+    string currentCompanySize = ViewBag.CompanySize as string;
+
+    var openJobCounts = ViewBag.OpenJobCounts as Dictionary<int, int>;
+    var locationSummaries = ViewBag.LocationSummaries as Dictionary<int, string>;
+
+    int companyCount = Model != null ? Model.Count() : 0;
+
+    var locations = new List<string>
+{
+        "Hồ Chí Minh",
+        "Hà Nội",
+        "Đà Nẵng",
+        "Bình Dương",
+        "Đồng Nai",
+        "Hải Phòng",
+        "Cần Thơ",
+        "Huế",
+        "Quảng Ngãi",
+        "Tây Ninh",
+        "Tiền Giang",
+        "Long An",
+        "Bắc Ninh",
+        "Nghệ An",
+        "Khánh Hòa"
+    };
+
+    var companySizes = new List<string>
+{
+        "1 - 50 employees",
+        "51 - 200 employees",
+        "201 - 500 employees",
+        "501 - 1000 employees",
+        "1000+ employees"
+    };
+}
+
+<div class="company-page company-page-modern">
+    <div class="container">
+
+        <div class="company-top-row">
+
+            <div class="company-hero">
+                <h1>Top Employers</h1>
+                <p>Explore trusted companies and active hiring opportunities.</p>
+            </div>
+
+            <div class="company-count-box">
+                <h2>@companyCount companies found</h2>
+
+                @if (!string.IsNullOrEmpty(currentKeyword) || !string.IsNullOrEmpty(currentLocation) || !string.IsNullOrEmpty(currentCompanySize))
+                {
+                    <p>
+                        Current filter:
+                        @(string.IsNullOrEmpty(currentKeyword) ? "" : "\"" + currentKeyword + "\" ")
+                        @(string.IsNullOrEmpty(currentLocation) ? "" : "• " + currentLocation + " ")
+                        @(string.IsNullOrEmpty(currentCompanySize) ? "" : "• " + currentCompanySize)
+                    </p>
+                }
+                else
+                {
+                    <p>Showing approved employers on JobFind.</p>
+                }
+            </div>
+
+        </div>
+
+        <form class="company-search" method="get" action="@Url.Action("Index", "Employers")">
+            <input type="hidden" name="location" value="@currentLocation" />
+            <input type="hidden" name="companySize" value="@currentCompanySize" />
+
+            <div class="company-search-box">
+                <i class="fa fa-search"></i>
+                <input type="text"
+                       name="keyword"
+                       placeholder="Search company, location, keyword..."
+                       value="@currentKeyword" />
+            </div>
+
+            <button type="submit">Search</button>
+        </form>
+
+        <div class="company-page-layout">
+
+            <main class="company-result company-result-modern">
+
+                <div class="company-grid-page company-grid-modern">
+
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var company in Model)
+                        {
+                            int openJobs = 0;
+
+                            if (openJobCounts != null && openJobCounts.ContainsKey(company.CompanyID))
+                            {
+                                openJobs = openJobCounts[company.CompanyID];
+                            }
+
+                            string locationText = "Updating";
+
+                            if (locationSummaries != null && locationSummaries.ContainsKey(company.CompanyID))
+                            {
+                                locationText = locationSummaries[company.CompanyID];
+                            }
+
+                            <a href="@Url.Action("Details", "Employers", new { id = company.CompanyID })" class="company-card-link">
+
+                                <article class="company-card-modern">
+
+                                    <div class="company-logo-wrap">
+                                        @if (!string.IsNullOrEmpty(company.Logo))
+                                        {
+                                            <img src="@Url.Content(company.Logo)" alt="@company.CompanyName" />
+                                        }
+                                        else
+                                        {
+                                            <span>
+                                                @(company.CompanyName != null ? company.CompanyName.Substring(0, 1) : "C")
+                                            </span>
+                                        }
+                                    </div>
+
+                                    <div class="company-card-body">
+                                        <h3>@company.CompanyName</h3>
+
+                                        <div class="company-card-status">
+                                            @if (openJobs > 0)
+                                            {
+                                                <span class="hiring">Hiring Now</span>
+                                                <strong>@openJobs open job@(openJobs > 1 ? "s" : "")</strong>
+                                            }
+                                            else
+                                            {
+                                                <span class="no-job">No active jobs</span>
+                                            }
+                                        </div>
+
+                                        <div class="company-card-meta">
+                                            <p>
+                                                <i class="fa fa-map-marker"></i>
+                                                @locationText
+                                            </p>
+
+                                            <p>
+                                                <i class="fa fa-users"></i>
+                                                @(string.IsNullOrEmpty(company.CompanySize) ? "Company size updating" : company.CompanySize)
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="company-card-arrow">
+                                        <i class="fa fa-angle-right"></i>
+                                    </div>
+
+                                </article>
+
+                            </a>
+                        }
+                    }
+                    else
+                    {
+                        <div class="company-empty">
+                            <h3>No companies found</h3>
+                            <p>Try another keyword, location, or company size.</p>
+                            <a href="@Url.Action("Index", "Employers")">View all companies</a>
+                        </div>
+                    }
+
+                </div>
+
+            </main>
+
+            <aside class="company-filter company-filter-modern">
+
+                <div class="company-filter-head">
+                    <h3>Filter Companies</h3>
+                    <a href="@Url.Action("Index", "Employers")">Clear</a>
+                </div>
+
+                <div class="company-filter-group">
+                    <h4>Work Location</h4>
+
+                    <a class="company-filter-link @(string.IsNullOrEmpty(currentLocation) ? "active" : "")"
+                       href="@Url.Action("Index", "Employers", new { keyword = currentKeyword, companySize = currentCompanySize })">
+                        All Locations
+                    </a>
+
+                    @for (int i = 0; i < locations.Count; i++)
+                    {
+                        string itemClass = i >= 6 ? "extra-location hidden-location" : "";
+
+                        <a class="company-filter-link @itemClass @(currentLocation == locations[i] ? "active" : "")"
+                           href="@Url.Action("Index", "Employers", new { keyword = currentKeyword, location = locations[i], companySize = currentCompanySize })">
+                            @locations[i]
+                        </a>
+                    }
+
+                    <button type="button" class="show-location-btn" id="showLocationBtn">
+                        View more locations
+                    </button>
+                </div>
+
+                <div class="company-filter-group">
+                    <h4>Company Size</h4>
+
+                    <a class="company-filter-link @(string.IsNullOrEmpty(currentCompanySize) ? "active" : "")"
+                       href="@Url.Action("Index", "Employers", new { keyword = currentKeyword, location = currentLocation })">
+                        All Sizes
+                    </a>
+
+                    @foreach (var size in companySizes)
+                    {
+                        <a class="company-filter-link @(currentCompanySize == size ? "active" : "")"
+                           href="@Url.Action("Index", "Employers", new { keyword = currentKeyword, location = currentLocation, companySize = size })">
+                            @size
+                        </a>
+                    }
+                </div>
+
+                <div class="company-filter-tip">
+                    <i class="fa fa-lightbulb-o"></i>
+                    <p>Companies with active jobs are prioritized in search results.</p>
+                </div>
+
+            </aside>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+    var showLocationBtn = document.getElementById("showLocationBtn");
+
+    if (showLocationBtn) {
+        showLocationBtn.addEventListener("click", function () {
+            var hiddenItems = document.querySelectorAll(".hidden-location");
+
+            hiddenItems.forEach(function (item) {
+                item.classList.toggle("show-location");
+            });
+
+            if (showLocationBtn.innerText.indexOf("View more") >= 0) {
+                showLocationBtn.innerText = "Show less";
+            } else {
+                showLocationBtn.innerText = "View more locations";
+            }
+        });
+    }
+</script>

@@ -1,0 +1,143 @@
+﻿@{
+    ViewBag.Title = "Post a Job";
+    Layout = "~/Views/Shared/_EmployerLayout.cshtml";
+}
+
+<h1 class="employer-title">Post a Job</h1>
+
+@if (ViewBag.Error != null)
+{
+    <div class="auth-error">@ViewBag.Error</div>
+}
+
+<form method="post" action="@Url.Action("Create", "EmployerJobs")" class="employer-form">
+
+    <div class="form-group">
+        <label>Job Title</label>
+        <input type="text"
+               name="title"
+               value="@Request["title"]"
+               placeholder="Example: Junior Frontend Developer, Senior Sales Executive..." />
+        <small>Use clear keywords such as Junior, Senior, Frontend, Sales, Accountant to improve search results.</small>
+    </div>
+
+    <div class="form-group">
+        <label>Job Category</label>
+        <select name="categoryId">
+            <option value="">-- Select a category --</option>
+
+            @foreach (var cate in ViewBag.Categories)
+            {
+                <option value="@cate.CategoryID" @(Request["categoryId"] == cate.CategoryID.ToString() ? "selected" : "")>
+                    @cate.CategoryName
+                </option>
+            }
+        </select>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label>Salary</label>
+            <input type="number"
+                   name="salary"
+                   min="0"
+                   value="@Request["salary"]"
+                   placeholder="Example: 1000" />
+            <small>Leave empty or enter 0 for Negotiable.</small>
+        </div>
+
+        <div class="form-group">
+            <label>Location</label>
+            <select name="location">
+                <option value="">-- Select location --</option>
+                <option value="Hồ Chí Minh" @(Request["location"] == "Hồ Chí Minh" ? "selected" : "")>Hồ Chí Minh</option>
+                <option value="Hà Nội" @(Request["location"] == "Hà Nội" ? "selected" : "")>Hà Nội</option>
+                <option value="Đà Nẵng" @(Request["location"] == "Đà Nẵng" ? "selected" : "")>Đà Nẵng</option>
+                <option value="Đồng Nai" @(Request["location"] == "Đồng Nai" ? "selected" : "")>Đồng Nai</option>
+                <option value="Bình Dương" @(Request["location"] == "Bình Dương" ? "selected" : "")>Bình Dương</option>
+                <option value="Hải Phòng" @(Request["location"] == "Hải Phòng" ? "selected" : "")>Hải Phòng</option>
+                <option value="Remote" @(Request["location"] == "Remote" ? "selected" : "")>Remote</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label>Job Type</label>
+            <select name="jobType">
+                <option value="">-- Select job type --</option>
+                <option value="Full-time" @(Request["jobType"] == "Full-time" ? "selected" : "")>Full-time</option>
+                <option value="Part-time" @(Request["jobType"] == "Part-time" ? "selected" : "")>Part-time</option>
+                <option value="Internship" @(Request["jobType"] == "Internship" ? "selected" : "")>Internship</option>
+                <option value="Remote" @(Request["jobType"] == "Remote" ? "selected" : "")>Remote</option>
+                <option value="Hybrid" @(Request["jobType"] == "Hybrid" ? "selected" : "")>Hybrid</option>
+                <option value="Freelance" @(Request["jobType"] == "Freelance" ? "selected" : "")>Freelance</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Experience / Level</label>
+            <select name="experience">
+                <option value="">-- Select experience --</option>
+                <option value="No experience required" @(Request["experience"] == "No experience required" ? "selected" : "")>No experience required</option>
+                <option value="Intern" @(Request["experience"] == "Intern" ? "selected" : "")>Intern</option>
+                <option value="Fresher" @(Request["experience"] == "Fresher" ? "selected" : "")>Fresher</option>
+                <option value="Junior - 1 year" @(Request["experience"] == "Junior - 1 year" ? "selected" : "")>Junior - 1 year</option>
+                <option value="Junior - 2 years" @(Request["experience"] == "Junior - 2 years" ? "selected" : "")>Junior - 2 years</option>
+                <option value="Senior - 3 years" @(Request["experience"] == "Senior - 3 years" ? "selected" : "")>Senior - 3 years</option>
+                <option value="Senior - 5 years" @(Request["experience"] == "Senior - 5 years" ? "selected" : "")>Senior - 5 years</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label>Application Deadline</label>
+            <input type="date"
+                   name="deadline"
+                   min="@DateTime.Now.ToString("yyyy-MM-dd")"
+                   value="@Request["deadline"]" />
+            <small>The deadline cannot be earlier than today.</small>
+        </div>
+
+        <div class="form-group">
+            <label>Hiring Quantity</label>
+            <input type="number"
+                   name="hiringQuantity"
+                   min="1"
+                   value="@(string.IsNullOrEmpty(Request["hiringQuantity"]) ? "1" : Request["hiringQuantity"])"
+                   placeholder="Example: 3" />
+            <small>Enter how many candidates you want to hire for this job.</small>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Job Description</label>
+        <textarea name="description"
+                  placeholder="Describe the main tasks of this position. Example: Develop web interfaces, work with HTML, CSS, JavaScript, ReactJS, and collaborate with backend team.">@Request["description"]</textarea>
+        <small>Add important keywords naturally. These keywords help Search in description work better.</small>
+    </div>
+
+    <div class="form-group">
+        <label>Requirements</label>
+        <textarea name="requirement"
+                  placeholder="Example: Junior level, 1 year experience, good communication, teamwork, HTML, CSS, JavaScript, ReactJS...">@Request["requirement"]</textarea>
+    </div>
+
+    <div class="form-group">
+        <label>Benefits</label>
+        <textarea name="benefit"
+                  placeholder="Example: Competitive salary, training, bonus, insurance, flexible working time...">@Request["benefit"]</textarea>
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="auth-btn">
+            Post Job
+        </button>
+
+        <a href="@Url.Action("Index", "EmployerJobs")" class="btn-back">
+            Back
+        </a>
+    </div>
+
+</form>

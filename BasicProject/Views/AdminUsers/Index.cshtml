@@ -1,0 +1,218 @@
+﻿@model IEnumerable<BasicProject.Models.User>
+
+@{
+    ViewBag.Title = "Manage Accounts";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    string currentRole = ViewBag.CurrentRole as string;
+    string currentStatus = ViewBag.CurrentStatus as string;
+    string keyword = ViewBag.Keyword as string;
+}
+
+@section styles {
+    <link rel="stylesheet" href="@Url.Content("~/Content/AdminAccounts.css?v=1002")" />
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="auth-success">
+        @TempData["Success"]
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="auth-error">
+        @TempData["Error"]
+    </div>
+}
+
+<div class="admin-account-modern-page">
+
+    <div class="admin-account-stat-row">
+
+        <div class="admin-account-stat-card candidate">
+            <span>Candidates</span>
+            <strong>@ViewBag.CandidateCount</strong>
+        </div>
+
+        <div class="admin-account-stat-card employer">
+            <span>Employers</span>
+            <strong>@ViewBag.EmployerCount</strong>
+        </div>
+
+        <div class="admin-account-stat-card admin">
+            <span>Admins</span>
+            <strong>@ViewBag.AdminCount</strong>
+        </div>
+
+        <div class="admin-account-stat-card active">
+            <span>Active</span>
+            <strong>@ViewBag.ActiveCount</strong>
+        </div>
+
+        <div class="admin-account-stat-card locked">
+            <span>Locked</span>
+            <strong>@ViewBag.LockedCount</strong>
+        </div>
+
+    </div>
+
+    <form method="get" action="@Url.Action("Index", "AdminUsers")" class="admin-account-filter-bar">
+
+        <div class="admin-account-search">
+            <i class="fa fa-search"></i>
+            <input type="text"
+                   name="keyword"
+                   value="@keyword"
+                   placeholder="Search by username or email..." />
+        </div>
+
+        <div class="admin-account-select">
+            <select name="role">
+                <option value="">All Roles</option>
+                <option value="Candidate" @(currentRole == "Candidate" ? "selected" : "")>Candidate</option>
+                <option value="Employer" @(currentRole == "Employer" ? "selected" : "")>Employer</option>
+                <option value="Admin" @(currentRole == "Admin" ? "selected" : "")>Admin</option>
+            </select>
+        </div>
+
+        <div class="admin-account-select">
+            <select name="status">
+                <option value="">All Statuses</option>
+                <option value="Active" @(currentStatus == "Active" ? "selected" : "")>Active</option>
+                <option value="Locked" @(currentStatus == "Locked" ? "selected" : "")>Locked</option>
+            </select>
+        </div>
+
+        <button type="submit" class="admin-account-filter-btn">
+            <i class="fa fa-filter"></i>
+            Filter
+        </button>
+
+        <a href="@Url.Action("Index", "AdminUsers")" class="admin-account-clear-btn">
+            Clear
+        </a>
+
+    </form>
+
+    <div class="admin-account-card-list">
+
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                string firstLetter = !string.IsNullOrEmpty(item.UserName)
+                    ? item.UserName.Substring(0, 1).ToUpper()
+                    : "U";
+
+                <div class="admin-account-card">
+
+                    <div class="admin-account-card-left">
+
+                        <div class="admin-account-avatar-large">
+                            @firstLetter
+                        </div>
+
+                        <div class="admin-account-main-info">
+                            <div class="admin-account-name-row">
+                                <h3>@item.UserName</h3>
+                                <span class="admin-account-id-badge">ID @item.UserID</span>
+                            </div>
+
+                            <p>
+                                <i class="fa fa-envelope"></i>
+                                @item.Email
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <div class="admin-account-card-center">
+
+                        <div class="admin-account-info-box">
+                            <span>Role</span>
+
+                            @if (item.Role == "Admin")
+                            {
+                                <strong class="text-purple">Admin</strong>
+                            }
+                            else if (item.Role == "Candidate")
+                            {
+                                <strong class="text-blue">Candidate</strong>
+                            }
+                            else
+                            {
+                                <strong class="text-orange">Employer</strong>
+                            }
+                        </div>
+
+                        <div class="admin-account-info-box">
+                            <span>Status</span>
+
+                            @if (item.IsActive == true)
+                            {
+                                <strong class="text-green">Active</strong>
+                            }
+                            else
+                            {
+                                <strong class="text-red">Locked</strong>
+                            }
+                        </div>
+
+                        <div class="admin-account-info-box">
+                            <span>Created</span>
+                            <strong>
+                                @(item.CreatedAt.HasValue ? item.CreatedAt.Value.ToString("dd/MM/yyyy") : "N/A")
+                            </strong>
+                        </div>
+
+                    </div>
+
+                    <div class="admin-account-card-actions">
+
+                        <a href="@Url.Action("Details", "AdminUsers", new { id = item.UserID })"
+                           class="admin-card-view-btn">
+                            <i class="fa fa-eye"></i>
+                            View
+                        </a>
+
+                        @if (item.IsActive == true)
+                        {
+                            <form method="post"
+                                  action="@Url.Action("Lock", "AdminUsers", new { id = item.UserID })"
+                                  onsubmit="return confirm('Are you sure you want to lock this account?');">
+                                <button type="submit" class="admin-card-lock-btn">
+                                    <i class="fa fa-lock"></i>
+                                    Lock
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form method="post"
+                                  action="@Url.Action("Unlock", "AdminUsers", new { id = item.UserID })">
+                                <button type="submit" class="admin-card-unlock-btn">
+                                    <i class="fa fa-unlock"></i>
+                                    Unlock
+                                </button>
+                            </form>
+                        }
+
+                    </div>
+
+                </div>
+            }
+        }
+        else
+        {
+            <div class="admin-empty-box">
+                <i class="fa fa-users"></i>
+                <h3>No accounts found</h3>
+                <p>There are no accounts matching this filter.</p>
+            </div>
+        }
+
+    </div>
+
+</div>

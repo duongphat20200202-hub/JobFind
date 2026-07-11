@@ -1,0 +1,512 @@
+﻿@using System.Web.Helpers
+@using System.Linq
+@using System.Collections.Generic
+@using BasicProject.Models
+
+@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    var topAppliedJobs = ViewBag.TopAppliedJobs as List<AdminTopAppliedJobItem>;
+    var expiringSoonJobs = ViewBag.ExpiringSoonJobs as List<AdminExpiringJobItem>;
+
+    var topAppliedLabels = topAppliedJobs != null
+        ? topAppliedJobs.Select(x => x.Title).ToList()
+        : new List<string>();
+
+    var topAppliedCounts = topAppliedJobs != null
+        ? topAppliedJobs.Select(x => x.ApplicationsCount).ToList()
+        : new List<int>();
+
+    int expiringSoonCount = expiringSoonJobs != null ? expiringSoonJobs.Count : 0;
+
+    int pendingCompanies = ViewBag.PendingCompanies != null ? ViewBag.PendingCompanies : 0;
+    int pendingJobs = ViewBag.PendingJobs != null ? ViewBag.PendingJobs : 0;
+    int pendingApplications = ViewBag.PendingApplications != null ? ViewBag.PendingApplications : 0;
+
+    int approvedJobs = ViewBag.ApprovedJobs != null ? ViewBag.ApprovedJobs : 0;
+    int rejectedJobs = ViewBag.RejectedJobs != null ? ViewBag.RejectedJobs : 0;
+    int closedJobs = ViewBag.ClosedJobs != null ? ViewBag.ClosedJobs : 0;
+    int expiredJobs = ViewBag.ExpiredJobs != null ? ViewBag.ExpiredJobs : 0;
+}
+
+<div class="admin-dashboard-v2">
+
+    <!-- KPI COMPACT -->
+    <div class="admin-kpi-compact-grid">
+
+        <div class="admin-kpi-compact-card">
+            <div class="admin-kpi-compact-icon blue">
+                <i class="fa fa-users"></i>
+            </div>
+            <div>
+                <span>Total Users</span>
+                <strong>@ViewBag.TotalUsers</strong>
+            </div>
+        </div>
+
+        <div class="admin-kpi-compact-card">
+            <div class="admin-kpi-compact-icon orange">
+                <i class="fa fa-briefcase"></i>
+            </div>
+            <div>
+                <span>Total Jobs</span>
+                <strong>@ViewBag.TotalJobs</strong>
+            </div>
+        </div>
+
+        <div class="admin-kpi-compact-card">
+            <div class="admin-kpi-compact-icon purple">
+                <i class="fa fa-file-signature"></i>
+            </div>
+            <div>
+                <span>Applications</span>
+                <strong>@ViewBag.TotalApplications</strong>
+            </div>
+        </div>
+
+        <div class="admin-kpi-compact-card">
+            <div class="admin-kpi-compact-icon green">
+                <i class="fa fa-building"></i>
+            </div>
+            <div>
+                <span>Companies</span>
+                <strong>@ViewBag.TotalCompanies</strong>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MAIN DASHBOARD -->
+    <div class="admin-dashboard-chart-grid">
+
+        <!-- TREND -->
+        <div class="admin-chart-card admin-chart-large">
+            <div class="admin-chart-card-head">
+                <div>
+                    <h2>Recruitment Trend</h2>
+                    <p>Jobs posted and applications over time.</p>
+                </div>
+
+                <div class="chart-period-switch" id="trendPeriodSwitch">
+                    <button type="button" class="active" data-period="7d">7 Days</button>
+                    <button type="button" data-period="30d">30 Days</button>
+                    <button type="button" data-period="12m">12 Months</button>
+                </div>
+            </div>
+
+            <div class="admin-chart-wrap trend-chart-height">
+                <canvas id="recruitmentTrendChart"></canvas>
+            </div>
+        </div>
+
+        <!-- APPLICATION STATUS -->
+        <div class="admin-chart-card">
+            <div class="admin-chart-card-head">
+                <div>
+                    <h2>Application Status</h2>
+                    <p>Current CV review result.</p>
+                </div>
+            </div>
+
+            <div class="admin-chart-wrap donut-chart-height">
+                <canvas id="applicationStatusChart"></canvas>
+            </div>
+        </div>
+
+        <!-- JOB STATUS -->
+        <div class="admin-chart-card">
+            <div class="admin-chart-card-head">
+                <div>
+                    <h2>Job Status</h2>
+                    <p>Approved, pending, rejected, closed, and expired jobs.</p>
+                </div>
+            </div>
+
+            <div class="admin-chart-wrap small-chart-height">
+                <canvas id="jobStatusChart"></canvas>
+            </div>
+        </div>
+
+        <!-- TOP CATEGORIES -->
+        <div class="admin-chart-card">
+            <div class="admin-chart-card-head">
+                <div>
+                    <h2>Top Categories</h2>
+                    <p>Industries with the most applications.</p>
+                </div>
+            </div>
+
+            <div class="admin-chart-wrap small-chart-height">
+                <canvas id="topCategoryChart"></canvas>
+            </div>
+        </div>
+
+        <!-- TOP APPLIED JOBS -->
+        <div class="admin-chart-card">
+            <div class="admin-chart-card-head">
+                <div>
+                    <h2>Top Applied Jobs</h2>
+                    <p>Most applied job posts.</p>
+                </div>
+            </div>
+
+            <div class="admin-chart-wrap small-chart-height">
+                <canvas id="topAppliedJobsChart"></canvas>
+            </div>
+        </div>
+
+        <!-- CONTROL SUMMARY -->
+        <div class="admin-control-card">
+
+            <div class="admin-control-section">
+                <h2>Need Review</h2>
+
+                <div class="admin-review-grid">
+                    <a href="@Url.Action("Index", "AdminCompanies", new { status = "Pending" })">
+                        <span>Companies</span>
+                        <strong>@pendingCompanies</strong>
+                    </a>
+
+                    <a href="@Url.Action("Index", "AdminJobs", new { status = "Pending" })">
+                        <span>Jobs</span>
+                        <strong>@pendingJobs</strong>
+                    </a>
+
+                    <a href="@Url.Action("Index", "AdminApplications", new { status = "Pending" })">
+                        <span>Applications</span>
+                        <strong>@pendingApplications</strong>
+                    </a>
+                </div>
+            </div>
+
+            <div class="admin-control-section">
+                <h2>Expiry Alert</h2>
+
+                <div class="admin-expiry-alert">
+                    <div>
+                        <span>Expiring within 7 days</span>
+                        <strong>@expiringSoonCount</strong>
+                    </div>
+
+                    <a href="@Url.Action("Index", "AdminJobs", new { status = "Expired" })">
+                        View Jobs
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const trendDatasets = {
+        "7d": {
+            labels: @Html.Raw(Json.Encode(ViewBag.Trend7Labels)),
+            jobs: @Html.Raw(Json.Encode(ViewBag.Trend7Jobs)),
+            applications: @Html.Raw(Json.Encode(ViewBag.Trend7Applications))
+        },
+        "30d": {
+            labels: @Html.Raw(Json.Encode(ViewBag.Trend30Labels)),
+            jobs: @Html.Raw(Json.Encode(ViewBag.Trend30Jobs)),
+            applications: @Html.Raw(Json.Encode(ViewBag.Trend30Applications))
+        },
+        "12m": {
+            labels: @Html.Raw(Json.Encode(ViewBag.Trend12Labels)),
+            jobs: @Html.Raw(Json.Encode(ViewBag.Trend12Jobs)),
+            applications: @Html.Raw(Json.Encode(ViewBag.Trend12Applications))
+        }
+    };
+
+    const appStatusLabels = ["Pending", "Accepted", "Rejected"];
+    const appStatusData = [
+        @(ViewBag.PendingApplications ?? 0),
+        @(ViewBag.AcceptedApplications ?? 0),
+        @(ViewBag.RejectedApplications ?? 0)
+    ];
+
+    const jobStatusLabels = ["Approved", "Pending", "Rejected", "Closed", "Expired"];
+    const jobStatusData = [
+        @approvedJobs,
+        @pendingJobs,
+        @rejectedJobs,
+        @closedJobs,
+        @expiredJobs
+    ];
+
+    const topCategoryLabels = @Html.Raw(Json.Encode(ViewBag.TopCategoryLabels));
+    const topCategoryData = @Html.Raw(Json.Encode(ViewBag.TopCategoryCounts));
+
+    const topAppliedLabels = @Html.Raw(Json.Encode(topAppliedLabels));
+    const topAppliedCounts = @Html.Raw(Json.Encode(topAppliedCounts));
+
+    Chart.defaults.font.family = "'Be Vietnam Pro', 'Poppins', Arial, sans-serif";
+    Chart.defaults.color = "#64748b";
+
+    // ======================
+    // TREND CHART
+    // ======================
+    const trendCtx = document.getElementById("recruitmentTrendChart").getContext("2d");
+
+    const jobsGradient = trendCtx.createLinearGradient(0, 0, 0, 260);
+    jobsGradient.addColorStop(0, "rgba(13, 110, 253, 0.30)");
+    jobsGradient.addColorStop(1, "rgba(13, 110, 253, 0.02)");
+
+    const appGradient = trendCtx.createLinearGradient(0, 0, 0, 260);
+    appGradient.addColorStop(0, "rgba(255, 152, 0, 0.26)");
+    appGradient.addColorStop(1, "rgba(255, 152, 0, 0.02)");
+
+    let currentPeriod = "7d";
+
+    const recruitmentTrendChart = new Chart(trendCtx, {
+        type: "line",
+        data: {
+            labels: trendDatasets[currentPeriod].labels,
+            datasets: [
+                {
+                    label: "Jobs Posted",
+                    data: trendDatasets[currentPeriod].jobs,
+                    borderColor: "#0d6efd",
+                    backgroundColor: jobsGradient,
+                    fill: true,
+                    tension: 0.35,
+                    borderWidth: 3,
+                    pointRadius: 3,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: "#0d6efd"
+                },
+                {
+                    label: "Applications",
+                    data: trendDatasets[currentPeriod].applications,
+                    borderColor: "#ff9800",
+                    backgroundColor: appGradient,
+                    fill: true,
+                    tension: 0.35,
+                    borderWidth: 3,
+                    pointRadius: 3,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: "#ff9800"
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: "index",
+                intersect: false
+            },
+            plugins: {
+                legend: {
+                    position: "top",
+                    labels: {
+                        usePointStyle: true,
+                        boxWidth: 8,
+                        font: {
+                            size: 12,
+                            weight: "700"
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: "rgba(148, 163, 184, 0.18)"
+                    },
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+
+    document.querySelectorAll("#trendPeriodSwitch button").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            document.querySelectorAll("#trendPeriodSwitch button").forEach(function (item) {
+                item.classList.remove("active");
+            });
+
+            this.classList.add("active");
+
+            const period = this.getAttribute("data-period");
+
+            recruitmentTrendChart.data.labels = trendDatasets[period].labels;
+            recruitmentTrendChart.data.datasets[0].data = trendDatasets[period].jobs;
+            recruitmentTrendChart.data.datasets[1].data = trendDatasets[period].applications;
+            recruitmentTrendChart.update();
+        });
+    });
+
+    // ======================
+    // APPLICATION STATUS
+    // ======================
+    new Chart(document.getElementById("applicationStatusChart"), {
+        type: "doughnut",
+        data: {
+            labels: appStatusLabels,
+            datasets: [{
+                data: appStatusData,
+                backgroundColor: ["#f59e0b", "#16a34a", "#ef4444"],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: "68%",
+            plugins: {
+                legend: {
+                    position: "bottom",
+                    labels: {
+                        usePointStyle: true,
+                        boxWidth: 8,
+                        font: {
+                            size: 11,
+                            weight: "700"
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // ======================
+    // JOB STATUS
+    // ======================
+    new Chart(document.getElementById("jobStatusChart"), {
+        type: "bar",
+        data: {
+            labels: jobStatusLabels,
+            datasets: [{
+                label: "Jobs",
+                data: jobStatusData,
+                backgroundColor: ["#16a34a", "#f59e0b", "#ef4444", "#64748b", "#7c3aed"],
+                borderRadius: 8,
+                maxBarThickness: 34
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: "y",
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    grid: {
+                        color: "rgba(148, 163, 184, 0.18)"
+                    },
+                    ticks: {
+                        stepSize: 1
+                    }
+                },
+                y: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+
+    // ======================
+    // TOP CATEGORIES
+    // ======================
+    new Chart(document.getElementById("topCategoryChart"), {
+        type: "bar",
+        data: {
+            labels: topCategoryLabels,
+            datasets: [{
+                label: "Applications",
+                data: topCategoryData,
+                backgroundColor: ["#0d6efd", "#ff9800", "#16a34a", "#7c3aed", "#ef4444", "#0ea5e9"],
+                borderRadius: 8,
+                maxBarThickness: 34
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: "rgba(148, 163, 184, 0.18)"
+                    },
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+
+    // ======================
+    // TOP APPLIED JOBS
+    // ======================
+    new Chart(document.getElementById("topAppliedJobsChart"), {
+        type: "bar",
+        data: {
+            labels: topAppliedLabels,
+            datasets: [{
+                label: "Applications",
+                data: topAppliedCounts,
+                backgroundColor: "#0d6efd",
+                borderRadius: 8,
+                maxBarThickness: 30
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: "y",
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    grid: {
+                        color: "rgba(148, 163, 184, 0.18)"
+                    },
+                    ticks: {
+                        stepSize: 1
+                    }
+                },
+                y: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+</script>

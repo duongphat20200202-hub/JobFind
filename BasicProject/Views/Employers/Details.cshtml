@@ -1,0 +1,204 @@
+﻿@model BasicProject.Models.CompanyDetailViewModel
+
+@{
+    ViewBag.Title = Model.Company.CompanyName;
+
+    var company = Model.Company;
+    var companyName = company != null ? company.CompanyName : "Company";
+}
+
+<section class="company-detail-page company-detail-modern">
+    <div class="container">
+
+        <div class="company-detail-layout">
+
+            <main class="company-detail-main">
+
+                <div class="company-detail-cover"
+                     style="background-image: url('@Url.Action("Banner", "EmployerCompany", new { id = company.CompanyID })');">
+                </div>
+
+                <div class="company-detail-header">
+
+                    <div class="company-detail-logo">
+                        @if (!string.IsNullOrEmpty(company.Logo))
+                        {
+                            <img src="@Url.Content(company.Logo)" alt="@company.CompanyName" />
+                        }
+                        else
+                        {
+                            <span>
+                                @(company.CompanyName != null ? company.CompanyName.Substring(0, 1) : "C")
+                            </span>
+                        }
+                    </div>
+
+                    <div class="company-detail-title">
+                        <h1>@company.CompanyName</h1>
+
+                        <div class="company-detail-meta">
+                            <span>
+                                <i class="fa fa-map-marker"></i>
+                                @(string.IsNullOrEmpty(Model.LocationSummary) ? "Updating" : Model.LocationSummary)
+                            </span>
+
+                            <span>
+                                <i class="fa fa-briefcase"></i>
+                                @Model.OpenJobCount open job@(Model.OpenJobCount > 1 ? "s" : "")
+                            </span>
+
+                            <span>
+                                <i class="fa fa-users"></i>
+                                @(string.IsNullOrEmpty(company.CompanySize) ? "Company size updating" : company.CompanySize)
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="company-section">
+                    <h2>About Company</h2>
+
+                    <p>
+                        @(string.IsNullOrEmpty(company.Description)
+                            ? "Company information is being updated."
+                            : company.Description)
+                    </p>
+                </div>
+
+                <div class="company-section">
+                    <div class="company-section-head">
+                        <h2>Open Jobs</h2>
+                        <span>@Model.OpenJobCount job@(Model.OpenJobCount > 1 ? "s" : "")</span>
+                    </div>
+
+                    @if (Model.Jobs != null && Model.Jobs.Any())
+                    {
+                        foreach (var job in Model.Jobs)
+                        {
+                            bool jobFull = job.RemainingSlots <= 0;
+
+                            <a href="@Url.Action("Details", "Jobs", new { id = job.JobID })" class="company-job-card">
+
+                                <div class="company-job-logo">
+                                    @if (!string.IsNullOrEmpty(company.Logo))
+                                    {
+                                        <img src="@Url.Content(company.Logo)" alt="@company.CompanyName" />
+                                    }
+                                    else
+                                    {
+                                        <span>
+                                            @(company.CompanyName != null ? company.CompanyName.Substring(0, 1) : "C")
+                                        </span>
+                                    }
+                                </div>
+
+                                <div class="company-job-info">
+                                    <h3>@job.Title</h3>
+                                    <p>@company.CompanyName</p>
+
+                                    <div class="company-job-meta">
+                                        <span>
+                                            <i class="fa fa-map-marker"></i>
+                                            @(string.IsNullOrEmpty(job.Location) ? "Updating" : job.Location)
+                                        </span>
+
+                                        <span>
+                                            <i class="fa fa-folder"></i>
+                                            @(job.Category != null ? job.Category.CategoryName : "Uncategorized")
+                                        </span>
+
+                                        <span>
+                                            <i class="fa fa-clock-o"></i>
+                                            @(string.IsNullOrEmpty(job.JobType) ? "Full-time" : job.JobType)
+                                        </span>
+
+                                        <span>
+                                            <i class="fa fa-calendar"></i>
+                                            @(job.Deadline.HasValue ? job.Deadline.Value.ToString("dd/MM/yyyy") : "No deadline")
+                                        </span>
+
+                                        <span class="company-job-slot @(jobFull ? "full" : "")">
+                                            <i class="fa fa-users"></i>
+                                            @(jobFull ? "Full" : job.RemainingSlots + " / " + job.HiringQuantity + " slots")
+                                        </span>
+                                    </div>
+
+                                    <strong>
+                                        @(job.Salary.HasValue && job.Salary.Value > 0
+                                            ? job.Salary.Value.ToString("N0") + " USD"
+                                            : "Negotiable")
+                                    </strong>
+                                </div>
+
+                                <div class="company-job-arrow">
+                                    <i class="fa fa-angle-right"></i>
+                                </div>
+
+                            </a>
+                        }
+                    }
+                    else
+                    {
+                        <div class="company-empty">
+                            <h3>No open jobs</h3>
+                            <p>This company does not have any active jobs at the moment.</p>
+                        </div>
+                    }
+                </div>
+
+            </main>
+
+            <aside class="company-detail-side">
+
+                <div class="company-side-card">
+                    <h3>Contact Information</h3>
+
+                    <p>
+                        <i class="fa fa-envelope"></i>
+                        @(string.IsNullOrEmpty(company.Email) ? "Updating" : company.Email)
+                    </p>
+
+                    <p>
+                        <i class="fa fa-phone"></i>
+                        @(string.IsNullOrEmpty(company.Phone) ? "Updating" : company.Phone)
+                    </p>
+
+                    <p>
+                        <i class="fa fa-globe"></i>
+                        @if (!string.IsNullOrEmpty(company.Website))
+                        {
+                            <a href="@company.Website" target="_blank">Company Website</a>
+                        }
+                        else
+                        {
+                            <span>Updating</span>
+                        }
+                    </p>
+                </div>
+
+                <div class="company-side-card company-side-summary">
+                    <h3>Company Summary</h3>
+
+                    <div>
+                        <span>Open Jobs</span>
+                        <strong>@Model.OpenJobCount</strong>
+                    </div>
+
+                    <div>
+                        <span>Location</span>
+                        <strong>@Model.LocationSummary</strong>
+                    </div>
+
+                    <div>
+                        <span>Company Size</span>
+                        <strong>@(string.IsNullOrEmpty(company.CompanySize) ? "Updating" : company.CompanySize)</strong>
+                    </div>
+                </div>
+
+            </aside>
+
+        </div>
+
+    </div>
+</section>

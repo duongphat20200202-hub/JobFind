@@ -1,0 +1,301 @@
+﻿@model BasicProject.Models.Job
+
+@{
+    ViewBag.Title = Model.Title;
+
+    var companyName = Model.Company != null ? Model.Company.CompanyName : "Updating";
+    var companyLogo = Model.Company != null ? Model.Company.Logo : "";
+    var companyId = Model.Company != null ? Model.Company.CompanyID : 0;
+
+    bool isExpired = Model.Deadline.HasValue && Model.Deadline.Value.Date < DateTime.Today;
+    bool isFull = Model.RemainingSlots <= 0;
+    bool canApply = !isExpired && !isFull && Model.Status == "Approved";
+
+    var similarJobs = ViewBag.SimilarJobs as List<BasicProject.Models.Job>;
+}
+
+<div class="job-detail-page careerlink-style">
+    @if (TempData["Success"] != null)
+    {
+        <div class="job-toast job-toast-success">
+            <i class="fa fa-check-circle"></i>
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Info"] != null)
+    {
+        <div class="job-toast job-toast-info">
+            <i class="fa fa-info-circle"></i>
+            @TempData["Info"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="job-toast job-toast-error">
+            <i class="fa fa-exclamation-circle"></i>
+            @TempData["Error"]
+        </div>
+    }
+
+    <div class="container job-detail-container">
+
+        <!-- LEFT MAIN -->
+        <div class="job-detail-main">
+
+            <!-- JOB HEADER -->
+            <div class="job-detail-hero">
+
+                <div class="job-cover"
+                     style="background-image: url('@Url.Action("Banner", "EmployerCompany", new { id = companyId })');">
+                </div>
+
+                <div class="job-hero-content">
+
+                    <div class="job-company-logo">
+                        @if (!string.IsNullOrEmpty(companyLogo))
+                        {
+                            <img src="@Url.Content(companyLogo)" alt="@companyName" />
+                        }
+                        else
+                        {
+                            <span>
+                                @(companyName != null ? companyName.Substring(0, 1) : "J")
+                            </span>
+                        }
+                    </div>
+
+                    <div class="job-hero-info">
+                        <h1>@Model.Title</h1>
+                        <p class="company-name">@companyName</p>
+
+                        <div class="job-status-row">
+                            @if (Model.IsHot)
+                            {
+                                <span class="job-status-badge hot">Hot Job</span>
+                            }
+
+                            @if (isExpired)
+                            {
+                                <span class="job-status-badge closed">Expired</span>
+                            }
+                            else if (isFull)
+                            {
+                                <span class="job-status-badge closed">Full</span>
+                            }
+                            else
+                            {
+                                <span class="job-status-badge open">Open</span>
+                            }
+                        </div>
+
+                        <div class="job-quick-meta">
+                            <span>
+                                <i class="fa fa-map-marker"></i>
+                                @(string.IsNullOrEmpty(Model.Location) ? "Updating" : Model.Location)
+                            </span>
+
+                            <span>
+                                <i class="fa fa-money"></i>
+                                @(Model.Salary.HasValue ? Model.Salary.Value.ToString("N0") + " USD" : "Negotiable")
+                            </span>
+
+                            <span>
+                                <i class="fa fa-briefcase"></i>
+                                @(string.IsNullOrEmpty(Model.Experience) ? "No experience required" : Model.Experience)
+                            </span>
+                        </div>
+
+                        <div class="job-action-row">
+                            @if (canApply)
+                            {
+                                <a href="@Url.Action("Apply", "Applications", new { jobId = Model.JobID })" class="btn-apply-main">
+                                    Apply Now
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="btn-apply-main disabled-apply-btn">
+                                    @(isFull ? "Job Full" : isExpired ? "Application Closed" : "Not Available")
+                                </span>
+                            }
+
+                            <a href="@Url.Action("Toggle", "SavedJobs", new { jobId = Model.JobID })" class="btn-save-main">
+                                <i class="fa fa-heart-o"></i> Save
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- TABS -->
+            <div class="job-detail-tabs">
+                <a href="#description">Description</a>
+                <a href="#requirements">Required Skills</a>
+                <a href="#benefits">Benefits</a>
+                <a href="#company">About Company</a>
+            </div>
+
+            <!-- CONTENT -->
+            <div class="job-detail-content">
+
+                <section id="description" class="job-content-block">
+                    <h2>Job Description</h2>
+                    <p>@Model.Description</p>
+                </section>
+
+                <section id="requirements" class="job-content-block">
+                    <h2>Experience / Detailed Skills</h2>
+                    <p>@Model.Requirement</p>
+                </section>
+
+                <section id="benefits" class="job-content-block">
+                    <h2>Benefits</h2>
+                    <p>@Model.Benefit</p>
+                </section>
+
+                <section class="job-info-grid">
+                    <div class="job-info-box">
+                        <i class="fa fa-briefcase"></i>
+                        <div>
+                            <span>Job Type</span>
+                            <strong>@(string.IsNullOrEmpty(Model.JobType) ? "Full-time" : Model.JobType)</strong>
+                        </div>
+                    </div>
+
+                    <div class="job-info-box">
+                        <i class="fa fa-clock-o"></i>
+                        <div>
+                            <span>Experience</span>
+                            <strong>@(string.IsNullOrEmpty(Model.Experience) ? "No experience required" : Model.Experience)</strong>
+                        </div>
+                    </div>
+
+                    <div class="job-info-box">
+                        <i class="fa fa-money"></i>
+                        <div>
+                            <span>Salary</span>
+                            <strong>@(Model.Salary.HasValue ? Model.Salary.Value.ToString("N0") + " USD" : "Negotiable")</strong>
+                        </div>
+                    </div>
+
+                    <div class="job-info-box">
+                        <i class="fa fa-map-marker"></i>
+                        <div>
+                            <span>Location</span>
+                            <strong>@(string.IsNullOrEmpty(Model.Location) ? "Updating" : Model.Location)</strong>
+                        </div>
+                    </div>
+
+                    <div class="job-info-box">
+                        <i class="fa fa-calendar"></i>
+                        <div>
+                            <span>Application Deadline</span>
+                            <strong>
+                                @(Model.Deadline.HasValue ? Model.Deadline.Value.ToString("dd/MM/yyyy") : "No deadline")
+                            </strong>
+                        </div>
+                    </div>
+
+                    <div class="job-info-box">
+                        <i class="fa fa-users"></i>
+                        <div>
+                            <span>Remaining Slots</span>
+                            <strong>
+                                @(Model.RemainingSlots > 0 ? Model.RemainingSlots + " / " + Model.HiringQuantity : "Full")
+                            </strong>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="company" class="job-content-block">
+                    <h2>Company Information</h2>
+                    <p>@(Model.Company != null ? Model.Company.Description : "Updating")</p>
+                </section>
+
+            </div>
+
+        </div>
+
+        <!-- RIGHT SIDEBAR -->
+        <aside class="job-detail-sidebar">
+
+            <a href="@Url.Action("Index", "Jobs", new { categoryId = Model.CategoryID, location = Model.Location })" class="send-similar-box">
+                <i class="fa fa-bell"></i>
+                <span>Find similar jobs</span>
+            </a>
+
+            <div class="similar-jobs-box">
+                <h3>Similar Jobs</h3>
+
+                @if (similarJobs != null && similarJobs.Any())
+                {
+                    foreach (var item in similarJobs)
+                    {
+                        var similarCompanyName = item.Company != null ? item.Company.CompanyName : "Updating";
+                        var similarLogo = item.Company != null ? item.Company.Logo : "";
+
+                        <a href="@Url.Action("Details", "Jobs", new { id = item.JobID })" class="similar-job-item">
+
+                            <div class="similar-logo">
+                                @if (!string.IsNullOrEmpty(similarLogo))
+                                {
+                                    <img src="@Url.Content(similarLogo)" alt="@similarCompanyName" />
+                                }
+                                else
+                                {
+                                    <span>
+                                        @(similarCompanyName != null ? similarCompanyName.Substring(0, 1) : "J")
+                                    </span>
+                                }
+                            </div>
+
+                            <div class="similar-info">
+                                <h4>@item.Title</h4>
+                                <p>@similarCompanyName</p>
+
+                                <span>
+                                    <i class="fa fa-map-marker"></i>
+                                    @(string.IsNullOrEmpty(item.Location) ? "Updating" : item.Location)
+                                </span>
+
+                                <strong>
+                                    @(item.Salary.HasValue && item.Salary.Value > 0
+                                        ? item.Salary.Value.ToString("N0") + " USD"
+                                        : "Negotiable")
+                                </strong>
+                            </div>
+
+                        </a>
+                    }
+                }
+                else
+                {
+                    <div class="empty-similar-jobs">
+                        No similar jobs found at the moment.
+                    </div>
+                }
+
+            </div>
+
+        </aside>
+
+    </div>
+
+</div>
+
+<script>
+    setTimeout(function () {
+        var toasts = document.querySelectorAll(".job-toast");
+
+        toasts.forEach(function (toast) {
+            toast.classList.add("hide");
+
+            setTimeout(function () {
+                toast.remove();
+            }, 400);
+        });
+    }, 1800);
+</script>

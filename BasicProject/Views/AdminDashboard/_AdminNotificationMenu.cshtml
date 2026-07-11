@@ -1,0 +1,45 @@
+﻿@model IEnumerable<BasicProject.Models.AdminNotificationItem>
+
+<div class="admin-top-dropdown" data-admin-dropdown>
+    <button type="button" class="admin-top-icon admin-bell-btn" data-dropdown-toggle title="Need review">
+        <i class="fa fa-bell"></i>
+
+        @if (ViewBag.NotificationCount != null && (int)ViewBag.NotificationCount > 0)
+        {
+            <span class="admin-noti-badge">@ViewBag.NotificationCount</span>
+        }
+    </button>
+
+    <div class="admin-dropdown-menu admin-notification-menu">
+        <div class="admin-dropdown-head">
+            <strong>Need Review</strong>
+            <span>@(ViewBag.NotificationCount ?? 0)</span>
+        </div>
+
+        <div class="admin-notification-list">
+            @if (Model != null && Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    <a href="@item.Url" class="admin-notification-item">
+                        <div class="admin-notification-icon">
+                            <i class="fa @item.IconClass"></i>
+                        </div>
+
+                        <div class="admin-notification-text">
+                            <strong>@item.Title</strong>
+                            <p>@item.Message</p>
+                            <span>@item.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+                        </div>
+                    </a>
+                }
+            }
+            else
+            {
+                <div class="admin-notification-empty">
+                    No pending notifications.
+                </div>
+            }
+        </div>
+    </div>
+</div>
